@@ -10,6 +10,7 @@
       eza # Ls
       zsh-powerlevel10k # Prompt
       zoxide
+      direnv
     ];
   };
 
@@ -20,6 +21,11 @@
       zoxide = {
       enable = true;
       enableZshIntegration = true;
+    };
+    direnv = {
+      enable = true;
+      # loadInNixShell = true;
+      nix-direnv.enable = true;
     };
       zsh = {
         enable = true;
@@ -38,6 +44,8 @@
           [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
           ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#757575'
+
+          eval "$(direnv hook zsh)"
 
           alias ls="${pkgs.eza}/bin/eza --icons=always --color=always"
           alias finder="ofd" # open find in current path.
