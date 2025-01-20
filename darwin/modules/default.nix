@@ -10,11 +10,13 @@
 #
 
 [
-  ./aerospace.nix
-  # ./alacritty.nix
-  ./kitty.nix
-  ./skhd.nix
-  ./yabai.nix
+  # ./aerospace.nix
+  ./alacritty.nix
+  # ./kitty.nix
+  # ./skhd.nix
+  ./git.nix
+  # ./yabai.nix
   ./zsh.nix
+  ./zellij.nix
   ../../modules/editors/nvim.nix
 ]

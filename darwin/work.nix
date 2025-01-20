@@ -14,13 +14,13 @@
 {
   imports = import (./modules);
 
-  aerospace.enable = true;
-
+  # aerospace.enable = true;
+  
   users.users.${vars.user} = {
     home = "/Users/${vars.user}";
     shell = pkgs.zsh;
   };
-
+  
   environment = {
     variables = {
       EDITOR = "${vars.editor}";
@@ -29,39 +29,35 @@
     systemPackages = with pkgs; [
       eza # Ls
       git # Version Control
-      mas # Mac App Store $ mas search <app>
-      ranger # File Manager
-      tldr # Help
-      wget # Download
       zsh-powerlevel10k # Prompt
+      bat
+      lazygit
     ];
   };
 
   programs.zsh.enable = true;
-
+  
   homebrew = {
     enable = true;
     onActivation = {
       upgrade = false;
       cleanup = "zap";
     };
+    brews = [
+      "nvm"
+    ];
     casks = [
-      # "adobe-creative-cloud"
-      # "bettertouchtool"
-      "cyberduck"
-      "docker"
-      "firefox"
-      "jordanbaird-ice"
-      "moonlight"
-      "obs"
+      "rectangle"
       "raycast"
-      "scroll-reverser"
+      "visual-studio-code"
+      "arc"
+      "bruno"
+      "gitbutler"
     ];
     masApps = {
-      "wireguard" = 1451685025;
     };
   };
-
+  
   system = {
     defaults = {
       NSGlobalDomain = {
@@ -95,40 +91,29 @@
       magicmouse = {
         MouseButtonMode = "TwoButton";
       };
-
       CustomUserPreferences = {
-        # Settings of plist in ~/Library/Preferences/
         "com.apple.finder" = {
-          # Set home directory as startup window
           NewWindowTargetPath = "file:///Users/${vars.user}/";
           NewWindowTarget = "PfHm";
-          # Set search scope to directory
           FXDefaultSearchScope = "SCcf";
-          # Multi-file tab view
           FinderSpawnTab = true;
         };
         "com.apple.desktopservices" = {
-          # Disable creating .DS_Store files in network an USB volumes
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;
         };
-        # Show battery percentage
         "~/Library/Preferences/ByHost/com.apple.controlcenter".BatteryShowPercentage = true;
-        # Privacy
         "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
       };
       CustomSystemPreferences = {
-        # ~/Library/Preferences/
       };
     };
   };
-
   home-manager.users.${vars.user} = {
     home.stateVersion = "22.05";
   };
-
   services.nix-daemon.enable = true;
-
+  security.pam.enableSudoTouchIdAuth = true;
   nix = {
     package = pkgs.nix;
     gc = {
@@ -141,7 +126,7 @@
       experimental-features = nix-command flakes
     '';
   };
-
+  
   system = {
     stateVersion = 4;
   };
