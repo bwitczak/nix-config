@@ -52,6 +52,7 @@
       "bruno"
       "gitbutler"
       "microsoft-teams"
+      "postman"
     ];
     masApps = {
     };
