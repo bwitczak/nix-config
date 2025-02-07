@@ -47,6 +47,7 @@
       cleanup = "zap";
     };
     casks = [
+      "docker"
       "rectangle"
       "raycast"
       "visual-studio-code"
