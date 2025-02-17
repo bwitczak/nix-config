@@ -7,10 +7,16 @@
 #       ├─ darwin-configuraiton.nix
 #       └─ <host>.nix
 #
-
-{ inputs, nixpkgs, nixpkgs-stable, darwin, home-manager, nixvim, vars, ... }:
-
-let
+{
+  inputs,
+  nixpkgs,
+  nixpkgs-stable,
+  darwin,
+  home-manager,
+  nixvim,
+  vars,
+  ...
+}: let
   systemConfig = system: {
     system = system;
     pkgs = import nixpkgs {
@@ -22,21 +28,20 @@ let
       config.allowUnfree = true;
     };
   };
-in
-{
-  m1 =
-    let
-      inherit (systemConfig "aarch64-darwin") system pkgs stable;
-    in
+in {
+  m1 = let
+    inherit (systemConfig "aarch64-darwin") system pkgs stable;
+  in
     darwin.lib.darwinSystem {
       inherit system;
-      specialArgs = { inherit inputs system pkgs stable;
-	vars = {
-	  user = "bwitczak";
-        location = "$HOME/.setup";
-        terminal = "alacritty";
-        editor = "nvim";
-	};
+      specialArgs = {
+        inherit inputs system pkgs stable;
+        vars = {
+          user = "bwitczak";
+          location = "$HOME/.setup";
+          terminal = "alacritty";
+          editor = "vi";
+        };
       };
       modules = [
         ./work.nix
