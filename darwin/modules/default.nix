@@ -14,8 +14,9 @@
   # ./kitty.nix
   # ./skhd.nix
   ./git.nix
+  ./tmux.nix
   # ./yabai.nix
   ./zsh.nix
-  ./zellij.nix
+  # ./zellij.nix
   # ../../modules/editors/nvim.nix
 ]
