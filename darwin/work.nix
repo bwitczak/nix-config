@@ -65,6 +65,7 @@
       "whatsapp"
       "logi-options+"
       "figma"
+      "cursor"
     ];
     masApps = {
     };
