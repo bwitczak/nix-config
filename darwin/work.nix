@@ -125,7 +125,7 @@
     };
   };
   home-manager.users.${vars.user} = {
-    home.stateVersion = "24.11";
+    home.stateVersion = "25.05";
   };
   # services.nix-daemon.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
