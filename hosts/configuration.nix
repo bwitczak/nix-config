@@ -51,6 +51,7 @@ in {
   };
 
   users.users.${vars.user} = {
+    initialPassword = "test";
     isNormalUser = true;
     extraGroups = ["wheel" "video" "audio" "camera" "networkmanager"];
   };

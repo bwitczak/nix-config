@@ -65,7 +65,7 @@
       "microsoft-teams"
       "postman"
       "whatsapp"
-      "logi-options+"
+      "logitech-options"
       "figma"
       "cursor"
     ];
