@@ -24,7 +24,7 @@
   imports =
     [./hardware-configuration.nix]
     ++ (import ../../modules/desktops/virtualisation)
-    ++ (import ../../modules/hardware/work);
+    # ++ (import ../../modules/hardware/work);
 
   boot = {
     loader = {
@@ -78,6 +78,8 @@
       # syncthing # Sync Tool
       # wacomtablet # Tablet
       # vscode
+      git-filter-repo
+      meld
     ];
   };
 
