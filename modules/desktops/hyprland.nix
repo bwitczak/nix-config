@@ -282,8 +282,8 @@ in
                 else if hostName == "work"
                 then [
                   "${toString mainMonitor},preferred,0x0,1"
-                  "${toString secondMonitorDesc},1920x1200@60,1920x0,1"
-                  "${toString thirdMonitorDesc},1920x1200@60,3840x0,1"
+                  # "${toString secondMonitorDesc},1920x1200@60,1920x0,1"
+                  # "${toString thirdMonitorDesc},1920x1200@60,3840x0,1"
                 ]
                 else if hostName == "xps"
                 then [
@@ -312,9 +312,9 @@ in
                 "1, monitor:${toString mainMonitor}"
                 "2, monitor:${toString mainMonitor}"
                 "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString secondMonitor}"
-                "5, monitor:${toString secondMonitor}"
-                "6, monitor:${toString secondMonitor}"
+                "4, monitor:${toString mainMonitor}"
+                "5, monitor:${toString mainMonitor}"
+                "6, monitor:${toString mainMonitor}"
               ]
               else [];
             animations = {
@@ -359,14 +359,14 @@ in
                 }
                 else {};
             };
-            device = {
-              name = "matthias’s-magic-mouse";
-              sensitivity = 0.5;
-              natural_scroll = true;
-            };
-            cursor = {
-              no_hardware_cursors = true;
-            };
+            # device = {
+            #   name = "matthias’s-magic-mouse";
+            #   sensitivity = 0.5;
+            #   natural_scroll = true;
+            # };
+            # cursor = {
+            #   no_hardware_cursors = true;
+            # };
             gestures =
               if hostName == "work" || hostName == "xps" || hostName == "probook"
               then {
