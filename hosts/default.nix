@@ -8,10 +8,21 @@
 #       └─ ./<host>.nix
 #           └─ default.nix
 #
-
-{ inputs, nixpkgs, nixpkgs-stable, nixos-hardware, home-manager, nur, nixvim, doom-emacs, hyprland, hyprspace, plasma-manager, vars, ... }:
-
-let
+{
+  inputs,
+  nixpkgs,
+  nixpkgs-stable,
+  nixos-hardware,
+  home-manager,
+  nur,
+  nixvim,
+  doom-emacs,
+  hyprland,
+  hyprspace,
+  plasma-manager,
+  vars,
+  ...
+}: let
   system = "x86_64-linux";
 
   pkgs = import nixpkgs {
@@ -25,8 +36,7 @@ let
   };
 
   lib = nixpkgs.lib;
-in
-{
+in {
   # Desktop Profile
   # beelink = lib.nixosSystem {
   #   inherit system;
@@ -158,26 +168,27 @@ in
   # };
 
   # DEPRECATED HP Probook Laptop Profile
-#   probook = lib.nixosSystem {
-#     inherit system;
-#     specialArgs = {
-#       inherit inputs system stable vars;
-#       host = {
-#         hostName = "probook";
-#         mainMonitor = "eDP-1";
-#         secondMonitor = "";
-#       };
-#     };
-#     modules = [
-#       nixvim.nixosModules.nixvim
-#       ./probook
-#       ./configuration.nix
+  #   probook = lib.nixosSystem {
+  #     inherit system;
+  #     specialArgs = {
+  #       inherit inputs system stable vars;
+  #       host = {
+  #         hostName = "probook";
+  #         mainMonitor = "eDP-1";
+  #         secondMonitor = "";
+  #       };
+  #     };
+  #     modules = [
+  #       nixvim.nixosModules.nixvim
+  #       ./probook
+  #       ./configuration.nix
 
-#       home-manager.nixosModules.home-manager
-#       {
-#         home-manager.useGlobalPkgs = true;
-#         home-manager.useUserPackages = true;
-#       }
-#     ];
-#   };
-# }
+  #       home-manager.nixosModules.home-manager
+  #       {
+  #         home-manager.useGlobalPkgs = true;
+  #         home-manager.useUserPackages = true;
+  #       }
+  #     ];
+  #   };
+  # }
+}
