@@ -28,29 +28,29 @@ let
 in
 {
   # Desktop Profile
-  beelink = lib.nixosSystem {
-    inherit system;
-    specialArgs = {
-      inherit inputs system stable hyprland hyprspace vars;
-      host = {
-        hostName = "beelink";
-        mainMonitor = "HDMI-A-2";
-        secondMonitor = "HDMI-A-1";
-      };
-    };
-    modules = [
-      nur.nixosModules.nur
-      nixvim.nixosModules.nixvim
-      ./beelink
-      ./configuration.nix
+  # beelink = lib.nixosSystem {
+  #   inherit system;
+  #   specialArgs = {
+  #     inherit inputs system stable hyprland hyprspace vars;
+  #     host = {
+  #       hostName = "beelink";
+  #       mainMonitor = "HDMI-A-2";
+  #       secondMonitor = "HDMI-A-1";
+  #     };
+  #   };
+  #   modules = [
+  #     nur.nixosModules.nur
+  #     nixvim.nixosModules.nixvim
+  #     ./beelink
+  #     ./configuration.nix
 
-      home-manager.nixosModules.home-manager
-      {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-      }
-    ];
-  };
+  #     home-manager.nixosModules.home-manager
+  #     {
+  #       home-manager.useGlobalPkgs = true;
+  #       home-manager.useUserPackages = true;
+  #     }
+  #   ];
+  # };
 
   # Work Profile
   work = lib.nixosSystem {
@@ -58,7 +58,7 @@ in
     specialArgs = {
       inherit inputs system stable hyprland hyprspace vars;
       host = {
-        hostName = "work";
+        hostName = "bwitczak";
         mainMonitor = "eDP-1";
         secondMonitor = "DP-4";
         thirdMonitor = "DP-5";
@@ -130,54 +130,54 @@ in
     ];
   };
 
-  h310m = lib.nixosSystem {
-    inherit system;
-    specialArgs = {
-      inherit inputs system stable hyprland vars;
-      host = {
-        hostName = "h310m";
-        mainMonitor = "DP-2";
-        secondMonitor = "HDMI-A-4";
-      };
-    };
-    modules = [
-      nur.nixosModules.nur
-      nixvim.nixosModules.nixvim
-      ./h310m
-      ./configuration.nix
+  # h310m = lib.nixosSystem {
+  #   inherit system;
+  #   specialArgs = {
+  #     inherit inputs system stable hyprland vars;
+  #     host = {
+  #       hostName = "h310m";
+  #       mainMonitor = "DP-2";
+  #       secondMonitor = "HDMI-A-4";
+  #     };
+  #   };
+  #   modules = [
+  #     nur.nixosModules.nur
+  #     nixvim.nixosModules.nixvim
+  #     ./h310m
+  #     ./configuration.nix
 
-      home-manager.nixosModules.home-manager
-      {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.users.${vars.user}.imports = [
-          nixvim.homeManagerModules.nixvim
-        ];
-      }
-    ];
-  };
+  #     home-manager.nixosModules.home-manager
+  #     {
+  #       home-manager.useGlobalPkgs = true;
+  #       home-manager.useUserPackages = true;
+  #       home-manager.users.${vars.user}.imports = [
+  #         nixvim.homeManagerModules.nixvim
+  #       ];
+  #     }
+  #   ];
+  # };
 
   # DEPRECATED HP Probook Laptop Profile
-  probook = lib.nixosSystem {
-    inherit system;
-    specialArgs = {
-      inherit inputs system stable vars;
-      host = {
-        hostName = "probook";
-        mainMonitor = "eDP-1";
-        secondMonitor = "";
-      };
-    };
-    modules = [
-      nixvim.nixosModules.nixvim
-      ./probook
-      ./configuration.nix
+#   probook = lib.nixosSystem {
+#     inherit system;
+#     specialArgs = {
+#       inherit inputs system stable vars;
+#       host = {
+#         hostName = "probook";
+#         mainMonitor = "eDP-1";
+#         secondMonitor = "";
+#       };
+#     };
+#     modules = [
+#       nixvim.nixosModules.nixvim
+#       ./probook
+#       ./configuration.nix
 
-      home-manager.nixosModules.home-manager
-      {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-      }
-    ];
-  };
-}
+#       home-manager.nixosModules.home-manager
+#       {
+#         home-manager.useGlobalPkgs = true;
+#         home-manager.useUserPackages = true;
+#       }
+#     ];
+#   };
+# }
