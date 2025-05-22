@@ -38,8 +38,6 @@ in
         '';
 
         variables = {
-          # WLR_NO_HARDWARE_CURSORS="1"; # Needed for VM
-          # WLR_RENDERER_ALLOW_SOFTWARE="1";
           XDG_CURRENT_DESKTOP = "Hyprland";
           XDG_SESSION_TYPE = "wayland";
           XDG_SESSION_DESKTOP = "Hyprland";
@@ -48,38 +46,19 @@ in
           NIXOS_OZONE_WL = 1;
           SDL_VIDEODRIVER = "wayland";
           OZONE_PLATFORM = "wayland";
-          WLR_RENDERER_ALLOW_SOFTWARE = 1;
           CLUTTER_BACKEND = "wayland";
           QT_QPA_PLATFORM = "wayland;xcb";
           QT_QPA_PLATFORMTHEME = "qt6ct";
           QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
           QT_AUTO_SCREEN_SCALE_FACTOR = 1;
           GDK_BACKEND = "wayland";
-          WLR_NO_HARDWARE_CURSORS = "1";
           MOZ_ENABLE_WAYLAND = "1";
         };
         sessionVariables =
           if hostName == "xps"
           then {
-            LIBVA_DRIVER_NAME = "nvidia";
-            __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-            NVD_BACKEND = "direct";
-            __NV_PRIME_RENDER_OFFLOAD = "1";
-            __NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
-            __VK_LAYER_NV_optimus = "NVIDIA_only";
-            GBM_BACKEND = "nvidia";
-            # EGL_PLATFORM = "wayland";
-            # __GL_GSYNC_ALLOWED = "0";
-            # __GL_VRR_ALLOWED = "0";
-            # WLR_DRM_NO_ATOMIC = "1";
-            # MOZ_DISABLE_RDD_SANDBOX = "1";
-            # _JAVA_AWT_WM_NONREPARENTING = "1";
-
-            # QT_QPA_PLATFORM = "wayland";
             QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-
             GDK_BACKEND = "wayland";
-            WLR_NO_HARDWARE_CURSORS = "1";
             MOZ_ENABLE_WAYLAND = "1";
           }
           else {};
@@ -271,30 +250,8 @@ in
             };
             monitor =
               [
-                ",preferred,auto,1,mirror,${toString mainMonitor}"
-              ]
-              ++ (
-                if hostName == "beelink" || hostName == "h310m"
-                then [
-                  "${toString mainMonitor},1920x1080@60,1920x0,1"
-                  "${toString secondMonitor},1920x1080@60,0x0,1"
-                ]
-                else if hostName == "work"
-                then [
-                  "${toString mainMonitor},preferred,0x0,1"
-                  # "${toString secondMonitorDesc},1920x1200@60,1920x0,1"
-                  # "${toString thirdMonitorDesc},1920x1200@60,3840x0,1"
-                ]
-                else if hostName == "xps"
-                then [
-                  "${toString mainMonitor},3840x2400@60,0x0,2"
-                  "${toString secondMonitor},1920x1080@60,1920x0,1"
-                  "${toString thirdMonitor},1920x1080@60,3840x0,1"
-                ]
-                else [
-                  "${toString mainMonitor},1920x1080@60,0x0,1"
-                ]
-              );
+                ",preferred,auto,1.5"
+              ];
             workspace =
               if hostName == "beelink" || hostName == "h310m"
               then [
@@ -360,7 +317,7 @@ in
                 else {};
             };
             # device = {
-            #   name = "matthias’s-magic-mouse";
+            #   name = "matthias's-magic-mouse";
             #   sensitivity = 0.5;
             #   natural_scroll = true;
             # };
@@ -524,7 +481,7 @@ in
               #!/bin/sh
 
               if grep open /proc/acpi/button/lid/${lid}/state; then
-                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, 1920x1080, 0x0, 1"
+                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, 3072x1920, 0x0, 1"
               else
                 if [[ `hyprctl monitors | grep "Monitor" | wc -l` != 1 ]]; then
                   ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, disable"

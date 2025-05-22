@@ -24,7 +24,6 @@
   imports =
     [./hardware-configuration.nix]
     ++ (import ../../modules/desktops/virtualisation);
-  # ++ (import ../../modules/hardware/work);
 
   boot = {
     loader = {
@@ -36,7 +35,6 @@
         enable = true;
         devices = ["nodev"];
         efiSupport = true;
-        # useOSProber = true;
         configurationLimit = 2;
         default = 2;
       };
@@ -48,37 +46,8 @@
   hyprland.enable = true;
   modules.programs.zen-browser.enable = true;
 
-  hardware = {
-    graphics = {
-      enable = true;
-      extraPackages = with pkgs; [
-        intel-media-driver
-        vaapiIntel
-        vaapiVdpau
-        libvdpau-va-gl
-      ];
-    };
-    # sane = {
-    #   enable = true;
-    #   extraBackends = [ pkgs.sane-airscan ];
-    # };
-  };
-
   environment = {
     systemPackages = with pkgs; [
-      # ansible # Automation
-      # ciscoPacketTracer8 # Networking
-      # eduvpn-client # VPN
-      # nil # LSP
-      # obsidian # Notes
-      # R
-      # rstudio
-      # rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive: <mount> | fusermount -u <mount>)
-      # simple-scan # Scanning
-      # sshpass # Ansible dependency
-      # syncthing # Sync Tool
-      # wacomtablet # Tablet
-      # vscode
       git-filter-repo
       meld
       code-cursor
@@ -87,20 +56,4 @@
   };
 
   programs.light.enable = true;
-
-  # flatpak = {
-  #   extraPackages = [
-  #     "com.github.tchx84.Flatseal"
-  #   ];
-  # };
-
-  # services = {
-  #   syncthing = {
-  #     enable = true;
-  #     user = "${vars.user}";
-  #     dataDir = "/home/${vars.user}/Sync";
-  #   };
-  # };
-
-  # systemd.services.NetworkManager-wait-online.enable = false;
 }
