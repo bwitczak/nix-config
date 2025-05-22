@@ -28,6 +28,7 @@
   stable,
   inputs,
   vars,
+  host,
   ...
 }: let
   terminal = pkgs.${vars.terminal};
@@ -214,6 +215,20 @@ in {
     #   channel = "https://nixos.org/channels/nixos-unstable";
     # };
     stateVersion = "25.05";
+  };
+
+  services.resolved.enable = true;
+  programs.nm-applet.enable = true;
+  networking = {
+    hostName = host.hostName;
+    nameservers = ["1.1.1.1" "1.1.1.3"];
+    networkmanager = {
+    enable = true;
+    dns = "systemd-resolved";
+  };
+  wireless = {
+    iwd.enable = true;
+  };
   };
 
   home-manager.users.${vars.user} = {
