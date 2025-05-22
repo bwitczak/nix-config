@@ -45,6 +45,7 @@
 
   laptop.enable = true;
   hyprland.enable = true;
+  modules.programs.zen-browser.enable = true;
 
   environment = {
     systemPackages = with pkgs; [
