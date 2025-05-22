@@ -80,6 +80,8 @@
       # vscode
       git-filter-repo
       meld
+      code-cursor
+      lazygit
     ];
   };
 
