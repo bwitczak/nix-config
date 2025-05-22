@@ -20,4 +20,5 @@
   ./waybar.nix
   ./wofi.nix
   ./games.nix
+  ./zen-browser.nix
 ]
