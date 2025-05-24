@@ -223,10 +223,10 @@ with lib; {
         system-monitor
       ];
 
-      xdg.desktopEntries.GDrive = {
-        name = "GDrive";
-        exec = "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes";
-      };
+      # xdg.desktopEntries.GDrive = {
+      #   name = "GDrive";
+      #   exec = "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes";
+      # };
     };
   };
 }

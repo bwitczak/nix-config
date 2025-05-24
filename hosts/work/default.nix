@@ -44,7 +44,26 @@
 
   laptop.enable = true;
   hyprland.enable = true;
+  gnome.enable = true;
   modules.programs.zen-browser.enable = true;
+
+  # Display Manager and X11 Configuration
+  services = {
+    xserver = {
+      enable = true;  # Enable X11 support
+      displayManager = {
+        gdm = {
+          enable = true;
+          wayland = true;  # Enable Wayland support in GDM
+        };
+      };
+      # Add layout configuration
+      xkb = {
+        layout = "pl";
+        variant = "";
+      };
+    };
+  };
 
   environment = {
     systemPackages = with pkgs; [

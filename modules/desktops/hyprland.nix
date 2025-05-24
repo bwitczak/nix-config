@@ -88,18 +88,6 @@ in
         enableGnomeKeyring = true;
       };
 
-      services.greetd = {
-        enable = true;
-        settings = {
-          default_session = {
-            # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-            command = "${config.programs.hyprland.package}/bin/Hyprland"; # tuigreet not needed with exec-once hyprlock
-            user = vars.user;
-          };
-        };
-        vt = 7;
-      };
-
       systemd.sleep.extraConfig = ''
         AllowSuspend=yes
         AllowHibernation=no
@@ -295,7 +283,7 @@ in
               ];
             };
             input = {
-              kb_layout = "us";
+              kb_layout = "pl";
               # kb_layout=us,us
               # kb_variant=,dvorak
               # kb_options=caps:ctrl_modifier
