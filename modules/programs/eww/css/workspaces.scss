@@ -5,20 +5,20 @@
 }
 
 .w0 {
-  color: #a89984;
+  color: #b8a082;
 }
 .w01, .w02, .w03, .w04, .w05, .w06, .w07, .w08, .w09 {
-  color: white;
+  color: #dcdcdc;
 }
 
 .w011, .w022, .w033, .w044, .w055, .w066, .w077, .w088, .w099 {
-  color: white;
-  box-shadow: inset 0px 2px LightSkyBlue;
+  color: #dcdcdc;
+  box-shadow: inset 0px 2px #f58b3c;
 }
 .workspace {
   padding: 0 5px;
 }
 
 .workspace button:hover {
-  box-shadow: inset 0px 2px #ffffff;
+  box-shadow: inset 0px 2px #e5d0a9;
 }

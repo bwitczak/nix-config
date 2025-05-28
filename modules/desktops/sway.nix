@@ -5,6 +5,9 @@
 
 { config, lib, pkgs, vars, host, ... }:
 
+let
+  colors = import ../theming/colors.nix;
+in
 with lib;
 with host;
 {
@@ -125,11 +128,11 @@ with host;
           defaultWorkspace = "workspace number 1";
 
           colors.focused = {
-            background = "#999999";
-            border = "#999999";
-            childBorder = "#999999";
-            indicator = "#212121";
-            text = "#999999";
+            background = "#${colors.scheme.default.hex.gray}";
+            border = "#${colors.scheme.default.hex.active}";
+            childBorder = "#${colors.scheme.default.hex.active}";
+            indicator = "#${colors.scheme.default.hex.bg}";
+            text = "#${colors.scheme.default.hex.fg}";
           };
 
           keybindings = {

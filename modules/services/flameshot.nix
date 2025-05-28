@@ -4,6 +4,11 @@
 
 { config, lib, vars, ... }:
 
+let
+  colors = import ../theming/colors.nix;
+in
+with lib;
+
 {
   config = lib.mkIf (config.services.xserver.enable) {
     home-manager.users.${vars.user} = {
@@ -13,7 +18,7 @@
           General = {
             savePath = "/home/${vars.user}/";
             saveAsFileExtension = ".png";
-            uiColor = "#2d0096";
+            uiColor = "#${colors.scheme.default.hex.purple}";
             showHelp = "false";
             disabledTrayIcon = "true";
           };

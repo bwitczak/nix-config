@@ -41,7 +41,7 @@ in
           text = ''
             window {
               /*background-color: #${bg};*/
-              background-color: rgba(0, 0, 0, 0.8);
+              background-color: rgba(${colors.scheme.default.rgb.bg}, 0.8);
             }
 
             #input {
@@ -59,7 +59,7 @@ in
 
             #text:selected {
               /*color: rgba(255, 255, 255, 0.8);*/
-              color: rgba(0, 0, 0, 0.8);
+              color: rgba(${colors.scheme.default.rgb.black}, 0.8);
             }
 
             #entry {
