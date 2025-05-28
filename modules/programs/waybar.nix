@@ -88,7 +88,7 @@ in
             border-radius: 0;
             font-family: FiraCode Nerd Font Mono;
             font-size: 12px;
-            text-shadow: 0px 0px 5px #000000;
+            text-shadow: 0px 0px 5px #${hex.black};
           }
           button:hover {
             background-color: rgba(${rgb.active},0.4);
@@ -147,15 +147,15 @@ in
             color: #${hex.text};
           }
           #battery.warning {
-            color: #ff5d17;
+            color: #${hex.orange};
             background-color: rgba(0,0,0,0);
           }
           #battery.critical {
-            color: #ff200c;
+            color: #${hex.red};
             background-color: rgba(0,0,0,0);
           }
           #battery.charging {
-            color: #9ece6a;
+            color: #${hex.green};
             background-color: rgba(0,0,0,0);
           }
         '';

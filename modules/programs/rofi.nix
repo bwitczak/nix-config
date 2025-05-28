@@ -26,7 +26,7 @@ in
           theme = with colors.scheme.doom; {
             "*" = {
               bg0 = mkLiteral "#${bg}";
-              bg1 = mkLiteral "#414868";
+              bg1 = mkLiteral "#${colors.scheme.default.hex.inactive}";
               fg0 = mkLiteral "#${text}";
               fg1 = mkLiteral "#${text-alt}";
 

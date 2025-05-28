@@ -10,6 +10,10 @@
   vars,
   ...
 }:
+
+let
+  colors = import ../theming/colors.nix;
+in
 with lib; {
   options = {
     gnome = {
@@ -91,15 +95,15 @@ with lib; {
           picture-options = "zoom";
           picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-l.svg";
           picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-d.svg";
-          primary-color = "#241f31";
-          secondary-color = "#000000";
+          primary-color = "#${colors.scheme.default.hex.bg}";
+          secondary-color = "#${colors.scheme.default.hex.black}";
         };
         "org/gnome/desktop/screensaver" = {
           color-shading-type = "solid";
           picture-options = "zoom";
           picture-uri = "file:///run-current-system/sw/share/backgrounds/gnome/blobs-l.svg";
-          primary-color = "#241f31";
-          secondary-color = "#000000";
+          primary-color = "#${colors.scheme.default.hex.bg}";
+          secondary-color = "#${colors.scheme.default.hex.black}";
         };
         "org/gnome/desktop/wm/preferences" = {
           action-right-click-titlebar = "toggle-maximize";

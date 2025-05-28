@@ -2,47 +2,47 @@
 #  System Themes
 #
 
-{
-  scheme = {
+let
+  schemes = {
     default = {
-      scheme = "One Dark Pro";
+      scheme = "Fantasy Night";
       hex = {
-        bg = "111111";
-        fg = "f7f7f7";
-        red = "e06c75";
-        orange = "d19a66";
-        yellow = "e5c07b";
-        green = "98c379";
-        cyan = "56b6c2";
-        blue = "61afef";
-        purple = "c678dd";
-        white = "abb2bf";
-        black = "282c34";
-        gray = "5c6370";
-        highlight = "e2be7d";
-        comment = "7f848e";
-        active = "f7870a";
-        inactive = "013864";
-        text = "999999";
+        bg = "0d1117";        # Deep dark blue-black like the night sky
+        fg = "e5d0a9";        # Warm cream/parchment like firelight
+        red = "d65d4e";       # Muted red like embers
+        orange = "f58b3c";    # Bright orange like the campfire
+        yellow = "e5c07b";    # Golden yellow like firelight
+        green = "4c8052";     # Forest green like the trees
+        cyan = "56b6c2";      # Cool cyan like moonlight
+        blue = "6aa8d6";      # Steel blue like the night sky
+        purple = "b294bb";    # Muted purple like twilight
+        white = "dcdcdc";     # Soft white like moonlight
+        black = "0b0910";     # Very dark purple-black
+        gray = "5c6370";      # Medium gray like shadows
+        highlight = "f58b3c"; # Orange highlight like fire
+        comment = "7f848e";   # Muted gray for comments
+        active = "f58b3c";    # Fire orange for active elements
+        inactive = "2a2d3a";  # Dark gray for inactive elements
+        text = "b8a082";      # Warm beige for secondary text
       };
       rgb = {
-        bg = "17, 17, 17";
-        fg = "247, 247, 247";
-        red = "224, 108, 118";
-        orange = "209, 154, 102";
-        yellow = "229, 192, 123";
-        green = "152, 195, 121";
-        cyan = "86, 181, 194";
-        blue = "97, 175, 223";
-        purple = "197, 120, 221";
-        white = "171, 178, 191";
-        black = "40, 44, 52";
-        gray = "92, 99, 112";
-        highlight = "226, 191, 125";
-        comment = "127, 132, 142";
-        active = "247, 135, 10";
-        inactive = "1, 56, 100";
-        text = "153, 153, 153";
+        bg = "13, 17, 23";        # Deep dark blue-black
+        fg = "229, 208, 169";     # Warm cream/parchment
+        red = "214, 93, 78";      # Muted red like embers
+        orange = "245, 139, 60";  # Bright orange like campfire
+        yellow = "229, 192, 123"; # Golden yellow
+        green = "76, 128, 82";    # Forest green
+        cyan = "86, 181, 194";    # Cool cyan
+        blue = "106, 168, 214";   # Steel blue
+        purple = "178, 148, 187"; # Muted purple
+        white = "220, 220, 220";  # Soft white
+        black = "11, 9, 16";      # Very dark purple-black
+        gray = "92, 99, 112";     # Medium gray
+        highlight = "245, 139, 60"; # Orange highlight
+        comment = "127, 132, 142";  # Muted gray
+        active = "245, 139, 60";    # Fire orange
+        inactive = "42, 45, 58";    # Dark gray
+        text = "184, 160, 130";     # Warm beige
       };
     };
 
@@ -128,5 +128,14 @@
       base0E = "b45bcf";
       base0F = "00f769";
     };
+  };
+in
+{
+  # Export scheme for compatibility
+  scheme = schemes;
+  
+  # Export default colors for easy access
+  colors = {
+    inherit (schemes.default) hex rgb;
   };
 }

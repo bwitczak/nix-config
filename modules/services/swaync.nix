@@ -118,10 +118,10 @@ in
         "swaync/style.css".text = with colors.scheme.default; ''
           @define-color cc-bg rgba(${rgb.bg}, 0.95);
           @define-color noti-border-color rgba(255, 255, 255, 0.15);
-          @define-color noti-bg rgb(17, 17, 27);
-          @define-color noti-bg-darker rgb(43, 43, 57);
-          @define-color noti-bg-hover rgb(27, 27, 43);
-          @define-color noti-bg-focus rgba(27, 27, 27, 0.6);
+          @define-color noti-bg rgb(${rgb.bg});
+          @define-color noti-bg-darker rgb(${rgb.inactive});
+          @define-color noti-bg-hover rgb(${rgb.gray});
+          @define-color noti-bg-focus rgba(${rgb.bg}, 0.6);
           @define-color noti-close-bg rgba(255, 255, 255, 0.1);
           @define-color noti-close-bg-hover rgba(255, 255, 255, 0.15);
           @define-color text-color rgba(${rgb.fg}, 1);
@@ -206,12 +206,12 @@ in
 
           .notification-action:first-child {
             border-bottom-left-radius: 10px;
-            background: #1b1b2b;
+            background: #${hex.bg};
           }
 
           .notification-action:last-child {
             border-bottom-right-radius: 10px;
-            background: #1b1b2b;
+            background: #${hex.bg};
           }
 
           .inline-reply {

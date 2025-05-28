@@ -240,7 +240,7 @@ in
           hyprland.homeManagerModules.default
         ];
 
-        programs.hyprlock = {
+        programs.hyprlock = with colors.scheme.default; {
           enable = true;
           settings = {
             general = {
@@ -253,7 +253,7 @@ in
               {
                 monitor = "";
                 path = "$HOME/.config/wall.png";
-                color = "rgba(25, 20, 20, 1.0)";
+                color = "rgba(${rgb.bg}, 1.0)";
                 blur_passes = 1;
                 blur_size = 0;
                 brightness = 0.2;
@@ -267,11 +267,11 @@ in
                 dots_size = 0.2;
                 dots_spacing = 0.2;
                 dots_center = true;
-                outer_color = "rgba(0, 0, 0, 0)";
-                inner_color = "rgba(0, 0, 0, 0.5)";
-                font_color = "rgb(200, 200, 200)";
+                outer_color = "rgba(${rgb.black}, 0)";
+                inner_color = "rgba(${rgb.black}, 0.5)";
+                font_color = "rgb(${rgb.fg})";
                 fade_on_empty = false;
-                placeholder_text = ''<i><span foreground="##cdd6f4">Input Password...</span></i>'';
+                placeholder_text = "Input Password...";
                 hide_input = false;
                 position = "0, -120";
                 halign = "center";
@@ -451,7 +451,7 @@ in
               mouse_move_enables_dpms = true;
               mouse_move_focuses_monitor = true;
               key_press_enables_dpms = true;
-              background_color = "0x111111";
+              background_color = "0x${bg}";
             };
             debug = {
               damage_tracking = 2;
