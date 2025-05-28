@@ -25,6 +25,12 @@
     [./hardware-configuration.nix]
     ++ (import ../../modules/desktops/virtualisation);
 
+  # Enable Intel microcode updates for optimal CPU performance
+  hardware.cpu.intel.updateMicrocode = true;
+  
+  # Enable all hardware features
+  hardware.enableAllFirmware = true;
+
   boot = {
     loader = {
       efi = {
@@ -39,6 +45,17 @@
         default = 2;
       };
       timeout = null;
+    };
+    kernelParams = [
+      "intel_pstate=active"
+      "acpi_osi=Linux"
+      "pcie_aspm=off"
+    ];
+    
+    # Kernel sysctl settings for balanced performance and power management
+    kernel.sysctl = {
+      "kernel.sched_migration_cost_ns" = 500000;
+      "vm.swappiness" = 10;
     };
   };
 
