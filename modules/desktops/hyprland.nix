@@ -71,6 +71,31 @@ in
           xwayland # X session
           nwg-look
         ];
+        
+        # Add systemd sleep hook for suspend/resume handling
+        etc."systemd/system-sleep/hyprlock-suspend" = {
+          source = pkgs.writeShellScript "hyprlock-suspend" ''
+            #!/bin/sh
+            case $1 in
+              pre)
+                # Before suspend - ensure lock screen is active
+                for user in $(users); do
+                  sudo -u "$user" env WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock --immediate 2>/dev/null || true
+                done
+                ;;
+              post)
+                # After resume - ensure lock screen is still active
+                sleep 2
+                for user in $(users); do
+                  if ! sudo -u "$user" pidof hyprlock >/dev/null 2>&1; then
+                    sudo -u "$user" env WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock 2>/dev/null || true
+                  fi
+                done
+                ;;
+            esac
+          '';
+          mode = "0755";
+        };
       };
 
       programs.hyprland = {
@@ -107,6 +132,51 @@ in
         AllowHybridSleep=yes
       ''; # Clamshell Mode
 
+      # Add systemd services for better suspend/resume handling
+      systemd.services.suspend-lock = {
+        description = "Lock screen before suspend";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        environment = {
+          DISPLAY = ":0";
+          WAYLAND_DISPLAY = "wayland-1";
+        };
+        serviceConfig = {
+          Type = "oneshot";
+          User = vars.user;
+          ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate";
+          TimeoutSec = "10";
+        };
+      };
+
+      systemd.services.resume-lock = {
+        description = "Ensure lock screen after resume";
+        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        environment = {
+          DISPLAY = ":0";
+          WAYLAND_DISPLAY = "wayland-1";
+        };
+        serviceConfig = {
+          Type = "oneshot";
+          User = vars.user;
+          ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 2 && if ! pidof hyprlock; then ${pkgs.hyprlock}/bin/hyprlock; fi'";
+          TimeoutSec = "10";
+        };
+      };
+
+      # Add systemd sleep hook for better suspend/resume handling
+      systemd.services.systemd-suspend-lock = {
+        description = "Lock screen on suspend";
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.bash}/bin/bash -c 'for user in $(users); do sudo -u $user WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock --immediate 2>/dev/null || true; done'";
+          TimeoutSec = "5";
+        };
+      };
+
       nix.settings = {
         substituters = ["https://hyprland.cachix.org"];
         trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
@@ -119,14 +189,51 @@ in
           else "LID";
         lockScript = pkgs.writeShellScript "lock-script" ''
           action=$1
-          ${pkgs.pipewire}/bin/pw-cli i all | ${pkgs.ripgrep}/bin/rg running
-          if [ $? == 1 ]; then
-            if [ "$action" == "lock" ]; then
+          
+          # Check if audio is playing (more reliable check)
+          audio_playing=false
+          if ${pkgs.pipewire}/bin/pw-cli i all 2>/dev/null | ${pkgs.ripgrep}/bin/rg -q "state.*running"; then
+            audio_playing=true
+          fi
+          
+          # Always allow locking, but be more careful with suspend
+          if [ "$action" == "lock" ]; then
+            if ! pidof ${pkgs.hyprlock}/bin/hyprlock; then
               ${pkgs.hyprlock}/bin/hyprlock
-            elif [ "$action" == "suspend" ]; then
-              ${pkgs.systemd}/bin/systemctl suspend
+            fi
+          elif [ "$action" == "suspend" ]; then
+            if [ "$audio_playing" = false ]; then
+              # Use the suspend script which handles locking
+              ${suspendScript}
             fi
           fi
+        '';
+        suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
+          #!/bin/sh
+          
+          # Function to check if hyprlock is running
+          is_locked() {
+            pidof hyprlock >/dev/null 2>&1
+          }
+          
+          # Function to lock the session
+          lock_session() {
+            if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$WAYLAND_DISPLAY" ]; then
+              ${pkgs.hyprlock}/bin/hyprlock --immediate &
+              sleep 2
+            fi
+          }
+          
+          # Ensure we're locked before suspend
+          if ! is_locked; then
+            lock_session
+          fi
+          
+          # Wait a moment for lock to engage
+          sleep 1
+          
+          # Suspend the system
+          ${pkgs.systemd}/bin/systemctl suspend
         '';
       in {
         imports = [
@@ -188,9 +295,9 @@ in
           enable = true;
           settings = {
             general = {
-              before_sleep_cmd = "${pkgs.systemd}/bin/loginctl lock-session";
+              before_sleep_cmd = "${pkgs.hyprlock}/bin/hyprlock --immediate";
               after_sleep_cmd = "${config.programs.hyprland.package}/bin/hyprctl dispatch dpms on";
-              ignore_dbus_inhibit = true;
+              ignore_dbus_inhibit = false;
               lock_cmd = "pidof ${pkgs.hyprlock}/bin/hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
             };
             listener = [
@@ -357,7 +464,7 @@ in
               "SUPER,Return,exec,${pkgs.${vars.terminal}}/bin/${vars.terminal}"
               "SUPER,Q,killactive,"
               "SUPER,Escape,exit,"
-              "SUPER,S,exec,${pkgs.systemd}/bin/systemctl suspend"
+              "SUPER,S,exec,${suspendScript}"
               "SUPER,L,exec,${pkgs.hyprlock}/bin/hyprlock"
               # "SUPER,E,exec,GDK_BACKEND=x11 ${pkgs.pcmanfm}/bin/pcmanfm"
               "SUPER,E,exec,${pkgs.pcmanfm}/bin/pcmanfm"
@@ -486,12 +593,46 @@ in
                 if [[ `hyprctl monitors | grep "Monitor" | wc -l` != 1 ]]; then
                   ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, disable"
                 else
-                  ${pkgs.hyprlock}/bin/hyprlock
-                  ${pkgs.systemd}/bin/systemctl suspend
+                  # Use the suspend script which handles locking
+                  ${suspendScript}
                 fi
               fi
             '';
             executable = true;
+          };
+        };
+
+        # Add systemd user services for session lock management
+        systemd.user.services.suspend-session-lock = {
+          Unit = {
+            Description = "Lock session before suspend";
+            Before = [ "sleep.target" ];
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate";
+            Environment = [
+              "WAYLAND_DISPLAY=wayland-1"
+              "XDG_SESSION_TYPE=wayland"
+            ];
+          };
+          Install = {
+            WantedBy = [ "sleep.target" ];
+          };
+        };
+
+        systemd.user.services.resume-session-check = {
+          Unit = {
+            Description = "Ensure lock screen after resume";
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 3 && if ! pidof hyprlock && [ \"$XDG_SESSION_TYPE\" = \"wayland\" ]; then ${pkgs.hyprlock}/bin/hyprlock; fi'";
+            Environment = [
+              "WAYLAND_DISPLAY=wayland-1"
+              "XDG_SESSION_TYPE=wayland"
+            ];
           };
         };
       };
