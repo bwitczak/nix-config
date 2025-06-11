@@ -58,16 +58,17 @@
       "docker"
       "rectangle"
       "raycast"
-      "visual-studio-code"
-      "arc"
+      # "visual-studio-code"
+      # "arc"
       "bruno"
-      "gitbutler"
+      # "gitbutler"
       "microsoft-teams"
       "postman"
       "whatsapp"
-      "logitech-options"
-      "figma"
+      # "logitech-options"
+      # "figma"
       "cursor"
+      "microsoft-edge"
     ];
     masApps = {
     };
