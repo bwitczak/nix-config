@@ -86,7 +86,7 @@ in
           * {
             border: none;
             border-radius: 0;
-            font-family: FiraCode Nerd Font Mono;
+            font-family: AdwaitaMono Nerd Font Mono;
             font-size: 12px;
             text-shadow: 0px 0px 5px #${hex.black};
           }

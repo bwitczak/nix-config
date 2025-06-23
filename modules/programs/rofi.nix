@@ -22,7 +22,7 @@ in
           enable = true;
           terminal = "${pkgs.${vars.terminal}}/bin/${vars.terminal}";
           location = "center";
-          font = "FiraCode Nerd Font Mono 11";
+          font = "AdwaitaMono Nerd Font Mono 11";
           theme = with colors.scheme.doom; {
             "*" = {
               bg0 = mkLiteral "#${bg}";

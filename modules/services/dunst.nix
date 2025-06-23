@@ -34,7 +34,7 @@ in
             frame_width = 3;
             frame_color = "#${bg}";
             separator_color = "frame";
-            font = "FiraCode Nerd Font 10";
+            font = "AdwaitaMono Nerd Font 10";
             line_height = 4;
             idle_threshold = 120;
             markup = "full";

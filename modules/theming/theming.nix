@@ -1,10 +1,14 @@
 #
 #  GTK
 #
-
-{ lib, config, pkgs, host, vars, ... }:
-
 {
+  lib,
+  config,
+  pkgs,
+  host,
+  vars,
+  ...
+}: {
   home-manager.users.${vars.user} = {
     home = {
       file.".config/wall.png".source = ./wall.png;
@@ -13,7 +17,10 @@
         gtk.enable = true;
         name = "Dracula-cursors";
         package = pkgs.dracula-theme;
-        size = if host.hostName == "xps" then 26 else 16;
+        size =
+          if host.hostName == "xps"
+          then 26
+          else 16;
       };
     };
 
@@ -36,7 +43,7 @@
         package = pkgs.papirus-icon-theme;
       };
       font = {
-        name = "FiraCode Nerd Font Mono Medium";
+        name = "AdwaitaMono Nerd Font Mono";
       };
     };
 
