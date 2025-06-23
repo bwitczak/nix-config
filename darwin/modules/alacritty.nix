@@ -7,7 +7,7 @@
   ...
 }: {
   homebrew.casks = [
-    "font-meslo-lg-nerd-font"
+    "font-adwaita-mono-nerd-font"
   ];
   home-manager.users.${vars.user} = {
     programs = {
@@ -31,7 +31,7 @@
             option_as_alt = "Both";
           };
           font = {
-            normal.family = "MesloLGS Nerd Font Mono";
+            normal.family = "AdwaitaMono Nerd Font";
             size = 13;
           };
           colors = {
