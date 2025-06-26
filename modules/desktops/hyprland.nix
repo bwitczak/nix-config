@@ -71,7 +71,7 @@ in
           xwayland # X session
           nwg-look
         ];
-        
+
         # Add systemd sleep hook for suspend/resume handling
         etc."systemd/system-sleep/hyprlock-suspend" = {
           source = pkgs.writeShellScript "hyprlock-suspend" ''
@@ -135,8 +135,8 @@ in
       # Add systemd services for better suspend/resume handling
       systemd.services.suspend-lock = {
         description = "Lock screen before suspend";
-        before = [ "sleep.target" ];
-        wantedBy = [ "sleep.target" ];
+        before = ["sleep.target"];
+        wantedBy = ["sleep.target"];
         environment = {
           DISPLAY = ":0";
           WAYLAND_DISPLAY = "wayland-1";
@@ -151,8 +151,8 @@ in
 
       systemd.services.resume-lock = {
         description = "Ensure lock screen after resume";
-        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-        wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        after = ["suspend.target" "hibernate.target" "hybrid-sleep.target"];
+        wantedBy = ["suspend.target" "hibernate.target" "hybrid-sleep.target"];
         environment = {
           DISPLAY = ":0";
           WAYLAND_DISPLAY = "wayland-1";
@@ -168,8 +168,8 @@ in
       # Add systemd sleep hook for better suspend/resume handling
       systemd.services.systemd-suspend-lock = {
         description = "Lock screen on suspend";
-        before = [ "sleep.target" ];
-        wantedBy = [ "sleep.target" ];
+        before = ["sleep.target"];
+        wantedBy = ["sleep.target"];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${pkgs.bash}/bin/bash -c 'for user in $(users); do sudo -u $user WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock --immediate 2>/dev/null || true; done'";
@@ -189,13 +189,13 @@ in
           else "LID";
         lockScript = pkgs.writeShellScript "lock-script" ''
           action=$1
-          
+
           # Check if audio is playing (more reliable check)
           audio_playing=false
           if ${pkgs.pipewire}/bin/pw-cli i all 2>/dev/null | ${pkgs.ripgrep}/bin/rg -q "state.*running"; then
             audio_playing=true
           fi
-          
+
           # Always allow locking, but be more careful with suspend
           if [ "$action" == "lock" ]; then
             if ! pidof ${pkgs.hyprlock}/bin/hyprlock; then
@@ -210,12 +210,12 @@ in
         '';
         suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
           #!/bin/sh
-          
+
           # Function to check if hyprlock is running
           is_locked() {
             pidof hyprlock >/dev/null 2>&1
           }
-          
+
           # Function to lock the session
           lock_session() {
             if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$WAYLAND_DISPLAY" ]; then
@@ -223,15 +223,15 @@ in
               sleep 2
             fi
           }
-          
+
           # Ensure we're locked before suspend
           if ! is_locked; then
             lock_session
           fi
-          
+
           # Wait a moment for lock to engage
           sleep 1
-          
+
           # Suspend the system
           ${pkgs.systemd}/bin/systemctl suspend
         '';
@@ -355,23 +355,11 @@ in
               inactive_opacity = 1;
               fullscreen_opacity = 1;
             };
-            monitor =
-              [
-                ",preferred,auto,1.5"
-              ];
+            monitor = [
+              ",preferred,auto,1.5"
+            ];
             workspace =
-              if hostName == "beelink" || hostName == "h310m"
-              then [
-                "1, monitor:${toString mainMonitor}"
-                "2, monitor:${toString mainMonitor}"
-                "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString mainMonitor}"
-                "5, monitor:${toString secondMonitor}"
-                "6, monitor:${toString secondMonitor}"
-                "7, monitor:${toString secondMonitor}"
-                "8, monitor:${toString secondMonitor}"
-              ]
-              else if hostName == "xps" || hostName == "work"
+              if hostName == "work"
               then [
                 "1, monitor:${toString mainMonitor}"
                 "2, monitor:${toString mainMonitor}"
@@ -606,7 +594,7 @@ in
         systemd.user.services.suspend-session-lock = {
           Unit = {
             Description = "Lock session before suspend";
-            Before = [ "sleep.target" ];
+            Before = ["sleep.target"];
           };
           Service = {
             Type = "oneshot";
@@ -617,14 +605,14 @@ in
             ];
           };
           Install = {
-            WantedBy = [ "sleep.target" ];
+            WantedBy = ["sleep.target"];
           };
         };
 
         systemd.user.services.resume-session-check = {
           Unit = {
             Description = "Ensure lock screen after resume";
-            After = [ "graphical-session.target" ];
+            After = ["graphical-session.target"];
           };
           Service = {
             Type = "oneshot";

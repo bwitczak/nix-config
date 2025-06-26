@@ -2,11 +2,14 @@
 # Gnome Control Manager
 # Mainly used for online accounts
 #
-
-{ lib, pkgs, vars, host, ... }:
-
 {
-  config = lib.mkIf (host.hostName == "beelink" || host.hostName == "work" || host.hostName == "xps") {
+  lib,
+  pkgs,
+  vars,
+  host,
+  ...
+}: {
+  config = lib.mkIf (host.hostName == "work" || host.hostName == "xps") {
     environment.systemPackages = with pkgs; [
       gnome-control-center
       gnome-online-accounts

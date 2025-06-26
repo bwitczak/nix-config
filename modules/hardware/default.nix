@@ -9,9 +9,7 @@
 #           ├─ default.nix *
 #           └─ ...
 #
-
 [
   ./bluetooth.nix
-  ./dslr.nix
   ./power.nix
 ]

@@ -12,7 +12,7 @@
   home-manager.users.${vars.user} = {
     home = {
       file.".config/wall.png".source = ./wall.png;
-      file.".config/wall.mp4".source = ./wall.mp4;
+      # file.".config/wall.mp4".source = ./wall.mp4;
       pointerCursor = {
         gtk.enable = true;
         name = "Dracula-cursors";
