@@ -81,6 +81,7 @@ in {
     vegur # NixOS
     source-code-pro
     jetbrains-mono
+    cozette
     font-awesome # Icons
     corefonts # MS
     noto-fonts # Google + Unicode
@@ -224,12 +225,12 @@ in {
     hostName = host.hostName;
     nameservers = ["1.1.1.1" "1.1.1.3"];
     networkmanager = {
-    enable = true;
-    dns = "systemd-resolved";
-  };
-  wireless = {
-    iwd.enable = true;
-  };
+      enable = true;
+      dns = "systemd-resolved";
+    };
+    wireless = {
+      iwd.enable = true;
+    };
   };
 
   home-manager.users.${vars.user} = {

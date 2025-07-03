@@ -43,7 +43,7 @@
         package = pkgs.papirus-icon-theme;
       };
       font = {
-        name = "AdwaitaMono Nerd Font Mono";
+        name = "CozetteVector";
       };
     };
 

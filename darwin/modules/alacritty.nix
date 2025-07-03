@@ -8,6 +8,7 @@
 }: {
   homebrew.casks = [
     "font-adwaita-mono-nerd-font"
+    "font-cozette"
   ];
   home-manager.users.${vars.user} = {
     programs = {
@@ -31,8 +32,8 @@
             option_as_alt = "Both";
           };
           font = {
-            normal.family = "AdwaitaMono Nerd Font";
-            size = 13;
+            normal.family = "CozetteVector";
+            size = 18;
           };
           colors = {
             primary = {
