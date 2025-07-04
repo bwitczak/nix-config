@@ -47,14 +47,35 @@
 
   programs.zsh.enable = true;
 
-  homebrew = {
+  homebrew = let
+    # List of casks that need greedy upgrades (auto-updating apps)
+    greedyCasks = [
+      "cursor"
+      "microsoft-edge"
+      "zen"
+      "raycast"
+      "logi-options+"
+      "docker-desktop"
+      "whatsapp"
+      "microsoft-teams"
+    ];
+
+    # Helper function to make casks greedy if they're in the list
+    makeGreedyIfNeeded = cask:
+      if builtins.elem cask greedyCasks
+      then {
+        name = cask;
+        greedy = true;
+      }
+      else cask;
+  in {
     enable = true;
     onActivation = {
       autoUpdate = true;
       upgrade = true;
       cleanup = "zap";
     };
-    casks = [
+    casks = map makeGreedyIfNeeded [
       "docker-desktop"
       "rectangle"
       "raycast"
