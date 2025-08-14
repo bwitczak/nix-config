@@ -22,12 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Unstable User Environment Manager
-    # home-manager-unstable = {
-    #   url = "github:nix-community/home-manager";
-    #   inputs.nixpkgs.follows = "nixpkgs-unstable";
-    # };
-
     # Stable User Environment Manager
     home-manager-stable = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -46,37 +40,6 @@
       # Requires "nur.nixosModules.nur" to be added to the host modules
     };
 
-    # Fixes OpenGL With Other Distros.
-    nixgl = {
-      url = "github:guibou/nixGL";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Neovim
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Neovim
-    nixvim-stable = {
-      url = "github:nix-community/nixvim/nixos-23.11";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-    };
-
-    # Emacs Overlays
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-      flake = false;
-    };
-
-    # Nix-Community Doom Emacs
-    doom-emacs = {
-      url = "github:nix-community/nix-doom-emacs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.emacs-overlay.follows = "emacs-overlay";
-    };
-
     # Official Hyprland Flake
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
@@ -86,13 +49,6 @@
     hyprspace = {
       url = "github:KZDKM/Hyprspace";
       inputs.hyprland.follows = "hyprland";
-    };
-
-    # KDE Plasma User Settings Generator
-    plasma-manager = {
-      url = "github:pjones/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "nixpkgs";
     };
   };
 
@@ -105,13 +61,8 @@
     home-manager-stable,
     darwin,
     nur,
-    nixgl,
-    nixvim,
-    nixvim-stable,
-    doom-emacs,
     hyprland,
     hyprspace,
-    plasma-manager,
     ...
   }:
   # Function telling flake which inputs to use
@@ -127,21 +78,21 @@
     nixosConfigurations = (
       import ./hosts {
         inherit (nixpkgs) lib;
-        inherit inputs nixpkgs nixpkgs-stable nixos-hardware home-manager nur nixvim doom-emacs hyprland hyprspace plasma-manager vars; # Inherit inputs
+        inherit inputs nixpkgs nixpkgs-stable nixos-hardware home-manager nur hyprland hyprspace vars; # Inherit inputs
       }
     );
 
     darwinConfigurations = (
       import ./darwin {
         inherit (nixpkgs) lib;
-        inherit inputs nixpkgs nixpkgs-stable home-manager darwin nixvim vars;
+        inherit inputs nixpkgs nixpkgs-stable home-manager darwin vars;
       }
     );
 
     homeConfigurations = (
       import ./nix {
         inherit (nixpkgs) lib;
-        inherit inputs nixpkgs nixpkgs-stable home-manager nixgl vars;
+        inherit inputs nixpkgs nixpkgs-stable home-manager vars;
       }
     );
   };
