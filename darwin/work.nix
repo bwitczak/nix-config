@@ -87,7 +87,7 @@
       "postman"
       "whatsapp"
       # "logitech-options"
-      # "figma"
+      "figma"
       "cursor"
       "microsoft-edge"
       "zen"
