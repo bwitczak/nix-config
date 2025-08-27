@@ -9,6 +9,7 @@
     systemPackages = with pkgs; [
       eza # Ls
       zsh-powerlevel10k # Prompt
+      zoxide
     ];
   };
 
@@ -16,6 +17,10 @@
     home.file.".p10k.zsh".source = ./p10k.zsh;
 
     programs = {
+      zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
       zsh = {
         enable = true;
         autosuggestion.enable = true;
@@ -36,6 +41,9 @@
 
           alias ls="${pkgs.eza}/bin/eza --icons=always --color=always"
           alias finder="ofd" # open find in current path.
+          alias cd="z"
+          alias cat="bat"
+          
           #cdf will change directory to active finder directory
         '';
       };
