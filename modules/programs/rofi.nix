@@ -1,14 +1,16 @@
 #
 #  System Menu
 #
-
-{ config, lib, pkgs, vars, ... }:
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   inherit (config.home-manager.users.${vars.user}.lib.formats.rasi) mkLiteral;
   colors = import ../theming/colors.nix;
-in
-{
+in {
   config = lib.mkIf (config.x11wm.enable) {
     home-manager.users.${vars.user} = {
       home = {
@@ -22,7 +24,7 @@ in
           enable = true;
           terminal = "${pkgs.${vars.terminal}}/bin/${vars.terminal}";
           location = "center";
-          font = "AdwaitaMono Nerd Font Mono 11";
+          font = "CozetteVector 15";
           theme = with colors.scheme.doom; {
             "*" = {
               bg0 = mkLiteral "#${bg}";

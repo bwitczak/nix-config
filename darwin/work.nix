@@ -55,7 +55,7 @@
       cleanup = "zap";
     };
     casks = [
-      "docker"
+      "docker-desktop"
       "rectangle"
       "raycast"
       # "visual-studio-code"
