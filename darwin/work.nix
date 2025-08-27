@@ -33,6 +33,7 @@
       bat
       lazygit
       azure-cli
+      dotnet-sdk
     ];
   };
 
@@ -54,6 +55,8 @@
       "gitbutler"
       "microsoft-teams"
       "postman"
+      "rider"
+      "logi-options+"
     ];
     masApps = {
     };
