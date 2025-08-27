@@ -11,7 +11,7 @@
 #
 [
   # ./bspwm.nix
-  ./gnome.nix
+  # ./gnome.nix
   ./hyprland.nix
   # ./kde.nix
   ./options.nix
