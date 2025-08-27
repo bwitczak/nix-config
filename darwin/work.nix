@@ -58,7 +58,7 @@
       "gitbutler"
       "microsoft-teams"
       "postman"
-      "rider"
+      "whatsapp"
       "logi-options+"
       "figma"
     ];
