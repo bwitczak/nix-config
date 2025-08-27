@@ -24,6 +24,8 @@
     shell = pkgs.zsh;
   };
 
+  system.primaryUser = vars.user;
+
   environment = {
     variables = {
       EDITOR = "${vars.editor}";
