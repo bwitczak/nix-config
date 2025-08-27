@@ -129,7 +129,7 @@ in
           @define-color bg-selected rgb(${rgb.fg});
 
           * {
-            font-family: FiraCode Nerd Font Mono;
+            font-family: AdwaitaMono Nerd Font Mono;
             font-weight: bolder;
           }
 

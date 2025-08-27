@@ -14,7 +14,7 @@ in
         enable = true;
         settings = {
           font = {
-            normal.family = "FiraCode Nerd Font";
+            normal.family = "AdwaitaMono Nerd Font";
             bold = { style = "Bold"; };
             size = 12;
           };

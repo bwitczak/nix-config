@@ -1,6 +1,6 @@
 [global]
 alignment="left"
-font="FiraCode Nerd Font 10"
+font="AdwaitaMono Nerd Font 10"
 format="<b>%s</b>\n%b"
 frame_color="#282c34"
 frame_width=3
