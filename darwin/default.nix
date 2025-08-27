@@ -13,7 +13,6 @@
   nixpkgs-stable,
   darwin,
   home-manager,
-  nixvim,
   vars,
   ...
 }: let
@@ -45,7 +44,6 @@ in {
       };
       modules = [
         ./work.nix
-        nixvim.nixDarwinModules.nixvim
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

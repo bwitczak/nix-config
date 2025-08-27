@@ -15,11 +15,8 @@
   nixos-hardware,
   home-manager,
   nur,
-  nixvim,
-  doom-emacs,
   hyprland,
   hyprspace,
-  plasma-manager,
   vars,
   ...
 }: let
@@ -52,7 +49,6 @@ in {
       };
     };
     modules = [
-      nixvim.nixosModules.nixvim
       ./work
       ./configuration.nix
 
@@ -77,7 +73,6 @@ in {
       };
     };
     modules = [
-      nixvim.nixosModules.nixvim
       ./vm
       ./configuration.nix
 
