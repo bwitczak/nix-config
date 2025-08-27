@@ -1,8 +1,11 @@
 #
 # Terminal Emulator
 #
-{ vars, pkgs, ... }:
 {
+  vars,
+  pkgs,
+  ...
+}: {
   homebrew.casks = [
     "font-meslo-lg-nerd-font"
   ];
@@ -12,11 +15,11 @@
         enable = true;
         settings = {
           terminal = {
-          shell = {
-          program = "${pkgs.zsh}/bin/zsh";
-          args = ["-l" "-c" "zellij"];
-        };
-        };
+            shell = {
+              program = "${pkgs.zsh}/bin/zsh";
+              args = ["-l" "-c" "tmux attach || tmux"];
+            };
+          };
           env = {
             TERM = "xterm-256color";
           };

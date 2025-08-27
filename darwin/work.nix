@@ -29,6 +29,10 @@
       EDITOR = "${vars.editor}";
       VISUAL = "${vars.editor}";
     };
+    etc."pam.d/sudo_local".text = ''
+      # Managed by Nix Darwin
+      auth       optional       ${pkgs.pam-reattach}/lib/pam/pam_reattach.so ignore_ssh
+    '';
     systemPackages = with pkgs; [
       alejandra
       eza # Ls
