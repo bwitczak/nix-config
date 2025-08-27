@@ -1,10 +1,11 @@
 #
 #  Shell
 #
-
-{ pkgs, vars, ... }:
-
 {
+  pkgs,
+  vars,
+  ...
+}: {
   environment = {
     systemPackages = with pkgs; [
       eza # Ls
@@ -19,14 +20,14 @@
 
     programs = {
       zoxide = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-    direnv = {
-      enable = true;
-      # loadInNixShell = true;
-      nix-direnv.enable = true;
-    };
+        enable = true;
+        enableZshIntegration = true;
+      };
+      direnv = {
+        enable = true;
+        # loadInNixShell = true;
+        nix-direnv.enable = true;
+      };
       zsh = {
         enable = true;
         autosuggestion.enable = true;
@@ -39,7 +40,7 @@
             "macos"
           ];
         };
-        initExtra = ''
+        initContent = ''
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
           [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -51,7 +52,7 @@
           alias finder="ofd" # open find in current path.
           alias cd="z"
           alias cat="bat"
-          
+
           #cdf will change directory to active finder directory
 
           eval "$(/opt/homebrew/bin/brew shellenv)"
