@@ -122,7 +122,7 @@
     home.stateVersion = "24.11";
   };
   # services.nix-daemon.enable = true;
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
   nix = {
     package = pkgs.nix;
     gc = {
