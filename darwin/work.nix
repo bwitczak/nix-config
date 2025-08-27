@@ -57,6 +57,7 @@
       "postman"
       "rider"
       "logi-options+"
+      "figma"
     ];
     masApps = {
     };
