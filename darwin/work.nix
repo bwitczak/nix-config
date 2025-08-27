@@ -32,8 +32,6 @@
       zsh-powerlevel10k # Prompt
       bat
       lazygit
-      azure-cli
-      dotnet-sdk
     ];
   };
 
