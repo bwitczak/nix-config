@@ -11,9 +11,8 @@
 #               ├─ default.nix *
 #               └─ ...
 #
-
 [
   ./docker.nix
-  ./qemu.nix
-  ./x11vnc.nix
+  # ./qemu.nix
+  # ./x11vnc.nix
 ]

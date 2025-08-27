@@ -30,7 +30,7 @@ with lib; {
       xserver = {
         enable = true;
         xkb = {
-          layout = "us";
+          layout = "pl";
           options = "eurosign:e";
         };
         displayManager.gdm.enable = true;

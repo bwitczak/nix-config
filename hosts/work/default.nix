@@ -16,25 +16,27 @@
 #           └─ ./work
 #               └─ default.nix
 #
-
-{ pkgs, vars, ... }:
-
 {
-  imports = [ ./hardware-configuration.nix ] ++
-    (import ../../modules/desktops/virtualisation) ++
-    (import ../../modules/hardware/work);
+  pkgs,
+  vars,
+  ...
+}: {
+  imports =
+    [./hardware-configuration.nix]
+    ++ (import ../../modules/desktops/virtualisation);
+  # ++ (import ../../modules/hardware/work);
 
   boot = {
     loader = {
       efi = {
         canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot/efi";
+        efiSysMountPoint = "/mnt/boot";
       };
       grub = {
         enable = true;
-        devices = [ "nodev" ];
+        devices = ["nodev"];
         efiSupport = true;
-        useOSProber = true;
+        # useOSProber = true;
         configurationLimit = 2;
         default = 2;
       };
@@ -55,45 +57,47 @@
         libvdpau-va-gl
       ];
     };
-    sane = {
-      enable = true;
-      extraBackends = [ pkgs.sane-airscan ];
-    };
+    # sane = {
+    #   enable = true;
+    #   extraBackends = [ pkgs.sane-airscan ];
+    # };
   };
 
   environment = {
     systemPackages = with pkgs; [
-      ansible # Automation
-      ciscoPacketTracer8 # Networking
-      eduvpn-client # VPN
-      nil # LSP
-      obsidian # Notes
-      R
-      rstudio
-      rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive: <mount> | fusermount -u <mount>)
-      simple-scan # Scanning
-      sshpass # Ansible dependency
-      syncthing # Sync Tool
-      wacomtablet # Tablet
-      vscode
+      # ansible # Automation
+      # ciscoPacketTracer8 # Networking
+      # eduvpn-client # VPN
+      # nil # LSP
+      # obsidian # Notes
+      # R
+      # rstudio
+      # rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive: <mount> | fusermount -u <mount>)
+      # simple-scan # Scanning
+      # sshpass # Ansible dependency
+      # syncthing # Sync Tool
+      # wacomtablet # Tablet
+      # vscode
+      git-filter-repo
+      meld
     ];
   };
 
   programs.light.enable = true;
 
-  flatpak = {
-    extraPackages = [
-      "com.github.tchx84.Flatseal"
-    ];
-  };
+  # flatpak = {
+  #   extraPackages = [
+  #     "com.github.tchx84.Flatseal"
+  #   ];
+  # };
 
-  services = {
-    syncthing = {
-      enable = true;
-      user = "${vars.user}";
-      dataDir = "/home/${vars.user}/Sync";
-    };
-  };
+  # services = {
+  #   syncthing = {
+  #     enable = true;
+  #     user = "${vars.user}";
+  #     dataDir = "/home/${vars.user}/Sync";
+  #   };
+  # };
 
-  systemd.services.NetworkManager-wait-online.enable = false;
+  # systemd.services.NetworkManager-wait-online.enable = false;
 }

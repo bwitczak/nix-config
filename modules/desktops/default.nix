@@ -9,13 +9,12 @@
 #           ├─ default.nix *
 #           └─ ...
 #
-
 [
-  ./bspwm.nix
+  # ./bspwm.nix
   ./gnome.nix
   ./hyprland.nix
-  ./kde.nix
+  # ./kde.nix
   ./options.nix
-  ./river.nix
-  ./sway.nix
+  # ./river.nix
+  # ./sway.nix
 ]

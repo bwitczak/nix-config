@@ -118,9 +118,9 @@
   let
     # Variables Used In Flake
     vars = {
-      user = "matthias";
+      user = "bwitczak";
       location = "$HOME/.setup";
-      terminal = "kitty";
+      terminal = "alacritty";
       editor = "vi";
     };
   in {

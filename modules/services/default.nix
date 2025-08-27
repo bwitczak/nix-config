@@ -9,15 +9,14 @@
 #           └─ default.nix *
 #               └─ ...
 #
-
 [
-  ./avahi.nix
+  # ./avahi.nix
   # ./dunst.nix
   ./flameshot.nix
-  ./picom.nix
-  ./polybar.nix
-  ./samba.nix
-  ./swaync.nix
-  ./sxhkd.nix
+  # ./picom.nix
+  # ./polybar.nix
+  # ./samba.nix
+  # ./swaync.nix
+  # ./sxhkd.nix
   ./udiskie.nix
 ]
