@@ -53,6 +53,8 @@
           alias cat="bat"
           
           #cdf will change directory to active finder directory
+
+          eval "$(/opt/homebrew/bin/brew shellenv)"
         '';
       };
     };
