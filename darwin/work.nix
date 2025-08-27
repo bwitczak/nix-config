@@ -123,6 +123,13 @@
           DSDontWriteUSBStores = true;
         };
         "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
+        "com.apple.menuextra.battery" = {
+          ShowPercent = true;
+        };
+        "com.apple.controlcenter" = {
+          "NSStatusItem Visible Battery" = true;
+          BatteryShowPercentage = true;
+        };
       };
       CustomSystemPreferences = {
       };
