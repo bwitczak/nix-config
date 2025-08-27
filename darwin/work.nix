@@ -40,12 +40,9 @@
   homebrew = {
     enable = true;
     onActivation = {
-      upgrade = false;
+      upgrade = true;
       cleanup = "zap";
     };
-    brews = [
-      "nvm"
-    ];
     casks = [
       "rectangle"
       "raycast"
@@ -53,6 +50,7 @@
       "arc"
       "bruno"
       "gitbutler"
+      "microsoft-teams"
     ];
     masApps = {
     };
