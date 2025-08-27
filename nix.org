@@ -181,7 +181,7 @@ If you would also like to configure these packages using their options, it's rec
               username = "<user>";
               homeDirectory = "/home/${user}";
               packages = [ pkgs.home-manager ];
-              stateVersion = "22.05";
+              stateVersion = "24.11";
             };
           }
         ];

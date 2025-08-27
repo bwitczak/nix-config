@@ -75,7 +75,7 @@ After installation a ~darwin-configuation.nix~ file will be created in ~/Users/<
     ]
 
     # Auto upgrade nix packages and the daemon service.
-    services.nix-daemon.enable = true;
+    # services.nix-daemon.enable = true;
     nix.package = pkgs.nix;
   }
 #+end_src
@@ -366,7 +366,7 @@ or build and automatically switch
                   username = “<user>”;
                   homeDirectory = “/Users/<user>”;
                   packages = [ pkgs.home-manager ];
-                  stateVersion = "22.05";
+                  stateVersion = "24.11";
                 };
               }
             ];

@@ -15,6 +15,8 @@
   imports = import (./modules);
 
   # aerospace.enable = true;
+
+  ids.gids.nixbld = 350;
   
   users.users.${vars.user} = {
     home = "/Users/${vars.user}";
@@ -27,6 +29,7 @@
       VISUAL = "${vars.editor}";
     };
     systemPackages = with pkgs; [
+      alejandra
       eza # Ls
       git # Version Control
       zsh-powerlevel10k # Prompt
@@ -115,9 +118,9 @@
     };
   };
   home-manager.users.${vars.user} = {
-    home.stateVersion = "22.05";
+    home.stateVersion = "24.11";
   };
-  services.nix-daemon.enable = true;
+  # services.nix-daemon.enable = true;
   security.pam.enableSudoTouchIdAuth = true;
   nix = {
     package = pkgs.nix;
