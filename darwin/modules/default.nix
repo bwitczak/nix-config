@@ -8,7 +8,6 @@
 #           ├─ default.nix *
 #           └─ ...
 #
-
 [
   # ./aerospace.nix
   ./alacritty.nix
@@ -18,5 +17,5 @@
   # ./yabai.nix
   ./zsh.nix
   ./zellij.nix
-  ../../modules/editors/nvim.nix
+  # ../../modules/editors/nvim.nix
 ]

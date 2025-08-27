@@ -3,11 +3,14 @@
 #  Enable with "gnome.enable = true;"
 #  View dconf changes with $ dconf watch /
 #
-
-{ config, lib, pkgs, vars, ... }:
-
-with lib;
 {
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}:
+with lib; {
   options = {
     gnome = {
       enable = mkOption {
@@ -46,9 +49,9 @@ with lib;
         gnome-tweaks
         yelp
       ];
-      gnome.excludePackages = (with pkgs; [
+      gnome.excludePackages = with pkgs; [
         # gnome-tour
-      ]);
+      ];
     };
 
     home-manager.users.${vars.user} = {
@@ -108,28 +111,28 @@ with lib;
         "org/gnome/desktop/wm/keybindings" = {
           # maximize = ["<super>up"]; # Floating
           # unmaximize = ["<super>down"];
-          maximize = [ "@as []" ]; # Tiling
-          unmaximize = [ "@as []" ];
-          switch-input-source = [ "@as []" ];
-          switch-input-source-backward = [ "@as []" ];
-          switch-to-workspace-left = [ "<alt>left" ];
-          switch-to-workspace-right = [ "<alt>right" ];
-          switch-to-workspace-1 = [ "<alt>1" ];
-          switch-to-workspace-2 = [ "<alt>2" ];
-          switch-to-workspace-3 = [ "<alt>3" ];
-          switch-to-workspace-4 = [ "<alt>4" ];
-          switch-to-workspace-5 = [ "<alt>5" ];
-          move-to-workspace-left = [ "<shift><alt>left" ];
-          move-to-workspace-right = [ "<shift><alt>right" ];
-          move-to-workspace-1 = [ "<shift><alt>1" ];
-          move-to-workspace-2 = [ "<shift><alt>2" ];
-          move-to-workspace-3 = [ "<shift><alt>3" ];
-          move-to-workspace-4 = [ "<shift><alt>4" ];
-          move-to-workspace-5 = [ "<shift><alt>5" ];
-          move-to-monitor-left = [ "<super><alt>left" ];
-          move-to-monitor-right = [ "<super><alt>right" ];
-          close = [ "<super>q" "<alt>f4" ];
-          toggle-fullscreen = [ "<super>f" ];
+          maximize = ["@as []"]; # Tiling
+          unmaximize = ["@as []"];
+          switch-input-source = ["@as []"];
+          switch-input-source-backward = ["@as []"];
+          switch-to-workspace-left = ["<alt>left"];
+          switch-to-workspace-right = ["<alt>right"];
+          switch-to-workspace-1 = ["<alt>1"];
+          switch-to-workspace-2 = ["<alt>2"];
+          switch-to-workspace-3 = ["<alt>3"];
+          switch-to-workspace-4 = ["<alt>4"];
+          switch-to-workspace-5 = ["<alt>5"];
+          move-to-workspace-left = ["<shift><alt>left"];
+          move-to-workspace-right = ["<shift><alt>right"];
+          move-to-workspace-1 = ["<shift><alt>1"];
+          move-to-workspace-2 = ["<shift><alt>2"];
+          move-to-workspace-3 = ["<shift><alt>3"];
+          move-to-workspace-4 = ["<shift><alt>4"];
+          move-to-workspace-5 = ["<shift><alt>5"];
+          move-to-monitor-left = ["<super><alt>left"];
+          move-to-monitor-right = ["<super><alt>right"];
+          close = ["<super>q" "<alt>f4"];
+          toggle-fullscreen = ["<super>f"];
         };
 
         "org/gnome/mutter" = {
@@ -140,8 +143,8 @@ with lib;
         "org/gnome/mutter/keybindings" = {
           #toggle-tiled-left = ["<super>left"]; # Floating
           #toggle-tiled-right = ["<super>right"];
-          toggle-tiled-left = [ "@as []" ]; # Tiling
-          toggle-tiled-right = [ "@as []" ];
+          toggle-tiled-left = ["@as []"]; # Tiling
+          toggle-tiled-right = ["@as []"];
         };
 
         "org/gnome/settings-daemon/plugins/power" = {
@@ -153,7 +156,7 @@ with lib;
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
           ];
-          search = [ "<super>space" ];
+          search = ["<super>space"];
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<super>return";
@@ -162,7 +165,7 @@ with lib;
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
           binding = "<super>t";
-          command = "kitty nvim";
+          command = "kitty vi";
           name = "open-editor";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
@@ -199,16 +202,16 @@ with lib;
           # Set Manually
           focus-border-toggle = true;
           float-always-on-top-enabled = true;
-          window-focus-up = [ "<super>up" ];
-          window-focus-down = [ "<super>down" ];
-          window-focus-left = [ "<super>left" ];
-          window-focus-right = [ "<super>right" ];
-          window-move-up = [ "<shift><super>up" ];
-          window-move-down = [ "<shift><super>down" ];
-          window-move-left = [ "<shift><super>left" ];
-          window-move-right = [ "<shift><super>right" ];
-          window-swap-last-active = [ "@as []" ];
-          window-toggle-float = [ "<shift><super>f" ];
+          window-focus-up = ["<super>up"];
+          window-focus-down = ["<super>down"];
+          window-focus-left = ["<super>left"];
+          window-focus-right = ["<super>right"];
+          window-move-up = ["<shift><super>up"];
+          window-move-down = ["<shift><super>down"];
+          window-move-left = ["<shift><super>left"];
+          window-move-right = ["<shift><super>right"];
+          window-swap-last-active = ["@as []"];
+          window-toggle-float = ["<shift><super>f"];
         };
       };
 

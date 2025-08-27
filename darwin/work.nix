@@ -8,21 +8,22 @@
 #       └─ ./modules
 #           └─ default.nix
 #
-
-{ pkgs, vars, ... }:
-
 {
-  imports = import (./modules);
+  pkgs,
+  vars,
+  ...
+}: {
+  imports = import ./modules;
 
   # aerospace.enable = true;
 
   ids.gids.nixbld = 350;
-  
+
   users.users.${vars.user} = {
     home = "/Users/${vars.user}";
     shell = pkgs.zsh;
   };
-  
+
   environment = {
     variables = {
       EDITOR = "${vars.editor}";
@@ -39,7 +40,7 @@
   };
 
   programs.zsh.enable = true;
-  
+
   homebrew = {
     enable = true;
     onActivation = {
@@ -64,7 +65,7 @@
     masApps = {
     };
   };
-  
+
   system = {
     defaults = {
       NSGlobalDomain = {
@@ -134,7 +135,7 @@
       experimental-features = nix-command flakes
     '';
   };
-  
+
   system = {
     stateVersion = 4;
   };
