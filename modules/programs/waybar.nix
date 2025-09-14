@@ -70,6 +70,8 @@ in
         "pulseaudio"
         "custom/sink"
         "custom/pad"
+        "network"
+        "custom/pad"
         "clock"
         "tray"
         "custom/notification"
@@ -301,6 +303,8 @@ in
                 format-linked = "<span font='11'>󱘖</span> {ifname} (No IP)";
                 format-disconnected = "<span font='11'>󱘖</span> Not connected";
                 tooltip-format = "{essid} {ipaddr}/{cidr}";
+                on-click = "${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
+                on-click-right = "${pkgs.networkmanagerapplet}/bin/nm-applet";
               };
               pulseaudio = {
                 format = "<span font='13'>{icon}</span> {volume}% {format_source} ";

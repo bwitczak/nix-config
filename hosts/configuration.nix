@@ -119,6 +119,7 @@ in {
         usbutils # Manage USB
         # wget # Retriever
         xdg-utils # Environment integration
+        networkmanagerapplet
 
         # Video/Audio
         alsa-utils # Audio Control
@@ -166,7 +167,7 @@ in {
     };
   };
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   services = {
     # printing = {
     #   enable = true;
