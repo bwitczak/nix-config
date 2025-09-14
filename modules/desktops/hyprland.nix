@@ -28,6 +28,21 @@ in
     config = mkIf (config.hyprland.enable) {
       wlwm.enable = true;
 
+      # XDG desktop portals so apps can read settings (including dark mode) under Hyprland
+      xdg.portal = {
+        enable = true;
+        xdgOpenUsePortal = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+        ];
+        config.common = {
+          # Use Hyprland for screenshare/screencast etc., GTK for settings backend
+          default = ["hyprland" "gtk"];
+          "org.freedesktop.impl.portal.Settings" = "gtk";
+          "org.freedesktop.impl.portal.FileChooser" = "gtk";
+        };
+      };
+
       environment = let
         exec = "exec dbus-launch Hyprland";
       in {
@@ -235,9 +250,6 @@ in
           ${pkgs.systemd}/bin/systemctl suspend
         '';
       in {
-        imports = [
-          hyprland.homeManagerModules.default
-        ];
 
         programs.hyprlock = with colors.scheme.default; {
           enable = true;
@@ -389,7 +401,7 @@ in
               ];
             };
             input = {
-              kb_layout = "us";
+              kb_layout = "pl";
               # kb_layout=us,us
               # kb_variant=,dvorak
               # kb_options=caps:ctrl_modifier

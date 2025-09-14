@@ -45,6 +45,14 @@
       font = {
         name = "CozetteVector";
       };
+
+      # Prefer dark variant where supported (GTK4 uses color-scheme, GTK3 uses prefer-dark)
+      gtk3.extraConfig = {
+        gtk-application-prefer-dark-theme = 1;
+      };
+      gtk4.extraConfig = {
+        color-scheme = "prefer-dark";
+      };
     };
 
     # qt = {
@@ -55,9 +63,22 @@
     #     package = pkgs.adwaita-qt;
     #   };
     # };
+
+    # GNOME/GTK-aware apps via dconf (used by portal Settings backend)
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+        gtk-theme = "Orchis-Dark-Compact";
+        icon-theme = "Papirus-Dark";
+        cursor-theme = "Dracula-cursors";
+      };
+    };
   };
 
   # environment.variables = {
   #   QT_QPA_PLATFORMTHEME = "gtk2";
   # };
+
+  # System-side dconf service for settings storage
+  programs.dconf.enable = true;
 }
