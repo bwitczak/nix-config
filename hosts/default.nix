@@ -42,9 +42,9 @@ in {
       host = {
         hostName = "bwitczak";
         mainMonitor = "eDP-1";
-        secondMonitor = "DP-4";
+        secondMonitor = "DP-1";
         thirdMonitor = "DP-5";
-        secondMonitorDesc = "desc:HP Inc. HP E24i G4 6CM3071B66";
+        secondMonitorDesc = "ViewSonic Corporation VX3276-QHD V9W202640037";
         thirdMonitorDesc = "desc:HP Inc. HP E24i G4 6CM3071996";
       };
     };
