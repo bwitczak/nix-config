@@ -9,9 +9,10 @@
 #           ├─ default.nix *
 #           └─ ...
 #
-
 [
   ./git.nix
   ./zsh.nix
   ./direnv.nix
+  ./tmux.nix
+  ./starship.nix
 ]

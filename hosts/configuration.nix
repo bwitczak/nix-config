@@ -105,6 +105,7 @@ in {
         # cifs-utils # Samba
         coreutils # GNU Utilities
         git # Version Control
+        starship # Shell Prompt
         # gvfs # Samba
         # killall # Process Killer
         # lshw # Hardware Config
