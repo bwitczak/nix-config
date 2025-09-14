@@ -120,6 +120,7 @@ in {
         # wget # Retriever
         xdg-utils # Environment integration
         networkmanagerapplet
+        alejandra
 
         # Video/Audio
         alsa-utils # Audio Control

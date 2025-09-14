@@ -556,6 +556,7 @@ in
                 # "$HOME/.config/eww/scripts/eww" # When running eww as a bar
                 "${pkgs.blueman}/bin/blueman-applet"
                 "${pkgs.swaynotificationcenter}/bin/swaync"
+                "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
                 # "${pkgs.hyprpaper}/bin/hyprpaper"
               ]
               ++ (

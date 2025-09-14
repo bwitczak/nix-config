@@ -18,6 +18,7 @@
 #
 {
   pkgs,
+  lib,
   vars,
   ...
 }: {
@@ -56,4 +57,15 @@
   };
 
   programs.light.enable = true;
+
+  # Fingerprint support (NixOS manual: services.fprintd + PAM fprintAuth)
+  services.fprintd.enable = true;
+
+  security.pam.services = {
+    login.fprintAuth = true;
+    sudo.fprintAuth = true;
+    greetd.fprintAuth = true;
+    # Override Hyprland module to ensure hyprlock supports fingerprints on this host
+    hyprlock.fprintAuth = lib.mkForce true;
+  };
 }
