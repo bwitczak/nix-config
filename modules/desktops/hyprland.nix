@@ -122,7 +122,6 @@ in
             user = vars.user;
           };
         };
-        vt = 7;
       };
 
       systemd.sleep.extraConfig = ''

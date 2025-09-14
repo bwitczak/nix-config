@@ -1,11 +1,8 @@
 #
 #  Options to enable packages depending on the DE/WM. They options are enabled in the <desktop>.nix files.
 #
-
-{ lib, ... }:
-
-with lib;
-{
+{lib, ...}:
+with lib; {
   options = {
     x11wm = {
       # Condition if host uses an X11 window manager
@@ -22,6 +19,13 @@ with lib;
       };
     };
     laptop = {
+      # Condition if host is a laptop
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+    };
+    gnome = {
       # Condition if host is a laptop
       enable = mkOption {
         type = types.bool;
