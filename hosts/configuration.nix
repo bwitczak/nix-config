@@ -231,7 +231,7 @@ in {
       iwd.enable = true;
     };
   };
-
+  home-manager.backupFileExtension = "backup";
   home-manager.users.${vars.user} = {
     home = {
       stateVersion = "25.05";
@@ -249,15 +249,15 @@ in {
           "text/plain" = "nvim.desktop";
           "text/html" = "nvim.desktop";
           "text/csv" = "nvim.desktop";
-          "application/pdf" = ["wps-office-pdf.desktop" "zen.desktop" "google-chrome.desktop"];
+          "application/pdf" = ["wps-office-pdf.desktop" "zen-browser.desktop" "google-chrome.desktop"];
           "application/zip" = "org.gnome.FileRoller.desktop";
           "application/x-tar" = "org.gnome.FileRoller.desktop";
           "application/x-bzip2" = "org.gnome.FileRoller.desktop";
           "application/x-gzip" = "org.gnome.FileRoller.desktop";
-          "x-scheme-handler/http" = ["zen.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/https" = ["zen.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/about" = ["zen.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/unknown" = ["zen.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/http" = ["zen-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/https" = ["zen-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/about" = ["zen-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/unknown" = ["zen-browser.desktop" "google-chrome.desktop"];
           "x-scheme-handler/mailto" = ["gmail.desktop"];
           "audio/mp3" = "mpv.desktop";
           "audio/x-matroska" = "mpv.desktop";
