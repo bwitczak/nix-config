@@ -359,7 +359,7 @@ in
               ",preferred,auto,1.5"
             ];
             workspace =
-              if hostName == "work"
+              if hostName == "dell"
               then [
                 "1, monitor:${toString mainMonitor}"
                 "2, monitor:${toString mainMonitor}"
@@ -402,7 +402,7 @@ in
               sensitivity = 0.8;
               natural_scroll = false;
               touchpad =
-                if hostName == "work" || hostName == "xps" || hostName == "probook"
+                if hostName == "dell" || hostName == "xps" || hostName == "probook"
                 then {
                   natural_scroll = true;
                   scroll_factor = 0.2;
@@ -420,7 +420,7 @@ in
             #   no_hardware_cursors = true;
             # };
             gestures =
-              if hostName == "work" || hostName == "xps" || hostName == "probook"
+              if hostName == "dell" || hostName == "xps" || hostName == "probook"
               then {
                 workspace_swipe = true;
                 workspace_swipe_fingers = 3;
@@ -515,7 +515,7 @@ in
               "SUPERCTRL,down,resizeactive,0 60"
             ];
             bindl =
-              if hostName == "xps" || hostName == "work"
+              if hostName == "xps" || hostName == "dell"
               then [
                 ",switch:Lid Switch,exec,$HOME/.config/hypr/script/clamshell.sh"
               ]
@@ -548,7 +548,7 @@ in
                 # "${pkgs.hyprpaper}/bin/hyprpaper"
               ]
               ++ (
-                if hostName == "work"
+                if hostName == "dell"
                 then [
                   "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
                   "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes"

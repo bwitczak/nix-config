@@ -35,7 +35,7 @@
   lib = nixpkgs.lib;
 in {
   # Work Profile
-  work = lib.nixosSystem {
+  dell = lib.nixosSystem {
     inherit system;
     specialArgs = {
       inherit inputs system stable hyprland hyprspace vars;
@@ -49,7 +49,7 @@ in {
       };
     };
     modules = [
-      ./work
+      ./dell
       ./configuration.nix
 
       home-manager.nixosModules.home-manager

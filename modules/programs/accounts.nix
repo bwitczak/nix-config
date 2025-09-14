@@ -9,7 +9,7 @@
   host,
   ...
 }: {
-  config = lib.mkIf (host.hostName == "work" || host.hostName == "xps") {
+  config = lib.mkIf (host.hostName == "dell" || host.hostName == "xps") {
     environment.systemPackages = with pkgs; [
       gnome-control-center
       gnome-online-accounts

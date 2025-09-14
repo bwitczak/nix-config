@@ -18,7 +18,7 @@ in
         mainMonitor
         secondMonitor
       ]
-      else if hostName == "work" || hostName == "xps"
+      else if hostName == "dell" || hostName == "xps"
       then [
         mainMonitor
         secondMonitor
