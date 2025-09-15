@@ -30,6 +30,13 @@
         #emulate zsh -c "$(direnv hook zsh)"
 
         #eval "$(direnv hook zsh)"
+
+        # Auto-attach Zellij on interactive shells
+        if command -v zellij >/dev/null 2>&1; then
+          if [[ -z "$ZELLIJ" && -o interactive ]]; then
+            exec zellij attach -c default
+          fi
+        fi
       '';
     };
   };

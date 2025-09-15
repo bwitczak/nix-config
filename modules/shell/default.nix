@@ -13,6 +13,6 @@
   ./git.nix
   ./zsh.nix
   ./direnv.nix
-  ./tmux.nix
+  ./zellij.nix
   ./starship.nix
 ]
