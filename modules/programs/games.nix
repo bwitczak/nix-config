@@ -3,21 +3,24 @@
 #  Do not forget to enable Steam play for all title in the settings menu
 #  When connecting a controller via bluetooth, it might error out. To fix this, remove device, pair - connect - trust, wait for auto disconnect, sudo rmmod btusb, sudo modprobe btusb, pair again.
 #
-
-{ config, pkgs, nur, lib, vars, ... }:
-
-let
+{
+  config,
+  pkgs,
+  nur,
+  lib,
+  vars,
+  ...
+}: let
   # PCSX2 Wrapper to run under X11
   pcsx2 = pkgs.pcsx2.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+    nativeBuildInputs = old.nativeBuildInputs ++ [pkgs.makeWrapper];
     postFixup = ''
       wrapProgram $out/bin/pcsx2 \
         --set GDK_BACKEND x11
     '';
   });
-in
-{
-  users.groups.plugdev.members = [ "root" "${vars.user}" ];
+in {
+  users.groups.plugdev.members = ["root" "${vars.user}"];
   services.udev.extraRules = ''
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"
   ''; # Group and udev rule needed to have access to the controller's gyro
@@ -29,7 +32,7 @@ in
       # Wireless controller
       General = {
         AutoEnable = true;
-        ControllerMode = "bredr";
+        ControllerMode = lib.mkDefault "dual";
       };
     };
   };
@@ -56,9 +59,10 @@ in
     #                             - Global options - Add Environment Variables: LD_PRELOAD=/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so
   };
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "steam"
-    "steam-original"
-    "steam-runtime"
-  ];
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "steam"
+      "steam-original"
+      "steam-runtime"
+    ];
 }
