@@ -250,7 +250,6 @@ in
           ${pkgs.systemd}/bin/systemctl suspend
         '';
       in {
-
         programs.hyprlock = with colors.scheme.default; {
           enable = true;
           settings = {
@@ -366,18 +365,24 @@ in
               inactive_opacity = 1;
               fullscreen_opacity = 1;
             };
-            monitor = [
-              ",preferred,auto,1.5"
-            ];
+            monitor =
+              if hostName == "dell"
+              then [
+                "${toString mainMonitor}, preferred, auto, 1.0"
+                "${toString secondMonitor}, preferred, auto, 1.6"
+              ]
+              else [
+                ",preferred,auto,1.6"
+              ];
             workspace =
               if hostName == "dell"
               then [
                 "1, monitor:${toString mainMonitor}"
                 "2, monitor:${toString mainMonitor}"
                 "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString mainMonitor}"
-                "5, monitor:${toString mainMonitor}"
-                "6, monitor:${toString mainMonitor}"
+                "4, monitor:${toString secondMonitor}"
+                "5, monitor:${toString secondMonitor}"
+                "6, monitor:${toString secondMonitor}"
               ]
               else [];
             animations = {
