@@ -18,10 +18,10 @@
       enableCompletion = true;
       histSize = 100000;
 
-      ohMyZsh = {
-        enable = true;
-        plugins = ["git"];
-      };
+      # ohMyZsh = {
+      #   enable = true;
+      #   plugins = ["git"];
+      # };
 
       shellInit = ''
         # Starship
@@ -32,11 +32,11 @@
         #eval "$(direnv hook zsh)"
 
         # Auto-attach Zellij on interactive shells
-        if command -v zellij >/dev/null 2>&1; then
-          if [[ -z "$ZELLIJ" && -o interactive ]]; then
-            exec zellij attach -c default
-          fi
-        fi
+        # if command -v zellij >/dev/null 2>&1; then
+        #   if [[ -z "$ZELLIJ" && -o interactive ]]; then
+        #     exec zellij attach -c default
+        #   fi
+        # fi
       '';
     };
   };

@@ -116,7 +116,7 @@ in {
         pciutils # Manage PCI
         ranger # File Manager
         smartmontools # Disk Health
-        tldr # Helper
+        # tldr # Helper
         usbutils # Manage USB
         # wget # Retriever
         xdg-utils # Environment integration
@@ -138,17 +138,20 @@ in {
         # appimage-run # Runs AppImages on NixOS
         # firefox # Browser
         # google-chrome # Browser
-        remmina # XRDP & VNC Client
+        # remmina # XRDP & VNC Client
 
         # File Management
         file-roller # Archive Manager
         pcmanfm # File Browser
-        p7zip # Zip Encryption
+        # p7zip # Zip Encryption
         # rsync # Syncer - $ rsync -r dir1/ dir2/
         unzip # Zip Files
         # unrar # Rar Files
         # wpsoffice # Office
         zip # Zip
+
+        # Development
+        bruno
 
         # Other Packages Found @
         # - ./<host>/default.nix
