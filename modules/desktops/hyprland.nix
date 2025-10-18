@@ -141,8 +141,8 @@ in
 
       systemd.sleep.extraConfig = ''
         AllowSuspend=yes
-        AllowHibernation=no
-        AllowSuspendThenHibernate=no
+        AllowHibernation=yes
+        AllowSuspendThenHibernate=yes
         AllowHybridSleep=yes
       ''; # Clamshell Mode
 
@@ -246,7 +246,7 @@ in
           # Wait a moment for lock to engage
           sleep 1
 
-          # Suspend the system
+          # Suspend the system (plain suspend to avoid odd resume state)
           ${pkgs.systemd}/bin/systemctl suspend
         '';
       in {

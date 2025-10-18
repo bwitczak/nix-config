@@ -41,6 +41,12 @@
       };
       timeout = null;
     };
+    # Prefer deep sleep over s2idle; tweak USB/i8042 for reliable resume
+    kernelParams = [
+      "mem_sleep_default=deep"
+      "usbcore.autosuspend=-1"
+      "i8042.reset"
+    ];
   };
 
   laptop.enable = true;
@@ -60,6 +66,13 @@
 
   # Fingerprint support (NixOS manual: services.fprintd + PAM fprintAuth)
   services.fprintd.enable = true;
+
+  # Ensure lid behavior is sane when docked or on external power
+  services.logind = {
+    lidSwitch = "suspend"; # default on battery
+    lidSwitchDocked = "ignore"; # don't suspend when docked/external displays
+    lidSwitchExternalPower = "ignore"; # ignore lid on AC
+  };
 
   security.pam.services = {
     login.fprintAuth = true;
