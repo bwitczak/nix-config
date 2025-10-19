@@ -368,23 +368,13 @@ in
             monitor =
               if hostName == "dell"
               then [
-                "${toString mainMonitor}, preferred, auto, 1.0"
-                "${toString secondMonitor}, preferred, auto, 1.6"
+                "${toString mainMonitor}, preferred, auto, 1.333"
+                "${toString secondMonitor}, preferred, auto, 1.06666667"
               ]
               else [
-                ",preferred,auto,1.6"
+                ",preferred,auto,1.333"
               ];
-            workspace =
-              if hostName == "dell"
-              then [
-                "1, monitor:${toString mainMonitor}"
-                "2, monitor:${toString mainMonitor}"
-                "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString secondMonitor}"
-                "5, monitor:${toString secondMonitor}"
-                "6, monitor:${toString secondMonitor}"
-              ]
-              else [];
+            workspace = [];
             animations = {
               enabled = false;
               bezier = [
@@ -435,15 +425,7 @@ in
             # cursor = {
             #   no_hardware_cursors = true;
             # };
-            gestures =
-              if hostName == "dell" || hostName == "xps" || hostName == "probook"
-              then {
-                workspace_swipe = true;
-                workspace_swipe_fingers = 3;
-                workspace_swipe_distance = 100;
-                workspace_swipe_create_new = true;
-              }
-              else {};
+            gestures = {};
             dwindle = {
               pseudotile = false;
               force_split = 2;
@@ -568,7 +550,7 @@ in
                 if hostName == "dell"
                 then [
                   "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-                  "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes"
+                  # "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes"
                   # "${pkgs.google-drive-ocamlfuse}/bin/google-drive-ocamlfuse /GDrive"
                 ]
                 else []

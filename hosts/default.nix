@@ -40,7 +40,7 @@ in {
     specialArgs = {
       inherit inputs system stable hyprland hyprspace vars;
       host = {
-        hostName = "bwitczak";
+        hostName = "dell";
         mainMonitor = "eDP-1";
         secondMonitor = "DP-1";
         thirdMonitor = "DP-5";
