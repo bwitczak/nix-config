@@ -3,7 +3,7 @@
 # Run with: nix build -f zen-browser.nix
 {pkgs ? import <nixpkgs> {}}: let
   pname = "zen-browser";
-  version = "1.16.4b";
+  version = "1.17.6b";
 in
   pkgs.appimageTools.wrapType2 {
     inherit pname version;
@@ -11,7 +11,7 @@ in
     src = pkgs.fetchurl {
       # url = "https://updates.zen-browser.app/releases/zen-browser-${version}-x86_64.AppImage";
       url = "https://github.com/zen-browser/desktop/releases/download/${version}/zen-x86_64.AppImage";
-      sha256 = "f954612476fb44d0278ae396640794079b135234b4beef0323448e28965b87f4";
+      sha256 = "959aea5a04e006869f8767cf66a5e44198a506f8cdf35242a5012c90387a1fb4";
     };
 
     extraInstallCommands = ''
@@ -21,9 +21,11 @@ in
       Type=Application
       Name=Zen Browser
       Comment=A calmer internet browser
-      Exec=$out/bin/zen-browser
+      Exec=$out/bin/zen-browser %u
+      Terminal=false
       Icon=zen-browser
       Categories=Network;WebBrowser;
+      MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
       EOF
     '';
 
