@@ -68,10 +68,12 @@
   services.fprintd.enable = true;
 
   # Ensure lid behavior is sane when docked or on external power
-  services.logind = {
-    lidSwitch = "suspend"; # default on battery
-    lidSwitchDocked = "ignore"; # don't suspend when docked/external displays
-    lidSwitchExternalPower = "ignore"; # ignore lid on AC
+  services.logind.settings = {
+    Login = {
+      HandleLidSwitch = "suspend"; # default on battery
+      HandleLidSwitchDocked = "ignore"; # don't suspend when docked/external displays
+      HandleLidSwitchExternalPower = "ignore"; # ignore lid on AC
+    };
   };
 
   security.pam.services = {
