@@ -210,16 +210,19 @@ in
             audio_playing=true
           fi
 
-          # Always allow locking, but be more careful with suspend
+          # Do not lock or suspend while audio is actively playing
+          if [ "$audio_playing" = true ]; then
+            # This prevents the screen from locking while watching videos or playing games
+            exit 0
+          fi
+
           if [ "$action" == "lock" ]; then
             if ! pidof ${pkgs.hyprlock}/bin/hyprlock; then
               ${pkgs.hyprlock}/bin/hyprlock
             fi
           elif [ "$action" == "suspend" ]; then
-            if [ "$audio_playing" = false ]; then
-              # Use the suspend script which handles locking
-              ${suspendScript}
-            fi
+            # Use the suspend script which handles locking
+            ${suspendScript}
           fi
         '';
         suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
@@ -312,11 +315,11 @@ in
             };
             listener = [
               {
-                timeout = 300;
+                timeout = 180;
                 on-timeout = "${lockScript.outPath} lock";
               }
               {
-                timeout = 1800;
+                timeout = 300;
                 on-timeout = "${lockScript.outPath} suspend";
               }
             ];
