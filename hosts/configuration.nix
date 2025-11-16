@@ -185,6 +185,77 @@ in {
       };
       pulse.enable = true;
       jack.enable = true;
+      wireplumber = {
+        enable = true;
+        configPackages = [
+          (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-disable-hdmi-autoswitch.conf" ''
+            monitor.alsa.rules = [
+              {
+                matches = [
+                  {
+                    # Match the specific laptop speakers sink
+                    node.name = "~alsa_output.pci.*Speaker.*"
+                  }
+                ]
+                actions = {
+                  update-props = {
+                    # Set very high priority for laptop speakers
+                    priority.driver = 3000
+                    priority.session = 3000
+                    node.pause-on-idle = false
+                  }
+                }
+              }
+              {
+                matches = [
+                  {
+                    # Match HDMI/DisplayPort sinks
+                    node.name = "~alsa_output.*HDMI.*"
+                  }
+                  {
+                    node.name = "~alsa_output.*DisplayPort.*"
+                  }
+                ]
+                actions = {
+                  update-props = {
+                    # Set very low priority for HDMI/DP outputs
+                    priority.driver = 100
+                    priority.session = 100
+                    session.suspend-timeout-seconds = 0
+                  }
+                }
+              }
+              {
+                matches = [
+                  {
+                    # Force the correct audio card profile with Speaker
+                    device.name = "alsa_card.pci-0000_00_1f.3-platform-skl_hda_dsp_generic"
+                  }
+                ]
+                actions = {
+                  update-props = {
+                    # Use the profile with Speaker output
+                    device.profile = "HiFi (HDMI1, HDMI2, HDMI3, Headset, Mic1, Speaker)"
+                  }
+                }
+              }
+            ]
+          '')
+          (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/52-default-routes.conf" ''
+            wireplumber.settings = {
+              # Don't automatically switch to new devices
+              device.routes.default-sink-volume = 1.0
+            }
+
+            wireplumber.profiles = {
+              policy = {
+                move-idle-streams = false
+                follow-default-target = false
+              }
+            }
+          '')
+        ];
+      };
     };
     # openssh = {
     #   enable = true;
@@ -244,6 +315,81 @@ in {
     };
     programs = {
       home-manager.enable = true;
+    };
+
+    # Systemd service to set default audio sink to laptop speakers
+    systemd.user.services.set-default-audio-sink = {
+      Unit = {
+        Description = "Set default audio sink to laptop speakers";
+        After = ["pipewire.service" "wireplumber.service"];
+        PartOf = ["graphical-session.target"];
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.writeShellScript "set-default-sink" ''
+          #!${pkgs.bash}/bin/bash
+          # Wait for WirePlumber to be ready
+          sleep 3
+
+          # Find the laptop speaker sink by name
+          SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+
+          if [ -n "$SINK_ID" ]; then
+            # Get the node name
+            SINK_NAME=$(wpctl inspect "$SINK_ID" | ${pkgs.gnugrep}/bin/grep "node.name" | ${pkgs.gnused}/bin/sed 's/.*= "\(.*\)"/\1/')
+
+            if [ -n "$SINK_NAME" ]; then
+              # Set the active default using PipeWire metadata (this is what actually works!)
+              pw-metadata -n default 0 default.audio.sink "{ \"name\": \"$SINK_NAME\" }"
+              echo "Set default audio sink to Speaker (ID: $SINK_ID, Name: $SINK_NAME)"
+            else
+              echo "Could not get sink node name"
+            fi
+          else
+            echo "Could not find laptop speaker sink"
+          fi
+        ''}";
+        RemainAfterExit = true;
+        Restart = "on-failure";
+        RestartSec = "5s";
+        Environment = "PATH=/run/current-system/sw/bin";
+      };
+      Install = {
+        WantedBy = ["graphical-session.target"];
+      };
+    };
+
+    # Monitor for audio device changes and reset default
+    systemd.user.services.monitor-audio-changes = {
+      Unit = {
+        Description = "Monitor audio device changes and maintain laptop speakers as default";
+        After = ["pipewire.service" "wireplumber.service"];
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.writeShellScript "monitor-audio" ''
+          #!${pkgs.bash}/bin/bash
+          # Monitor WirePlumber events and reset default when devices change
+          pw-cli subscribe Device | while read -r line; do
+            if echo "$line" | ${pkgs.gnugrep}/bin/grep -q "changed"; then
+              sleep 1
+              SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+              if [ -n "$SINK_ID" ]; then
+                SINK_NAME=$(wpctl inspect "$SINK_ID" 2>/dev/null | ${pkgs.gnugrep}/bin/grep "node.name" | ${pkgs.gnused}/bin/sed 's/.*= "\(.*\)"/\1/')
+                if [ -n "$SINK_NAME" ]; then
+                  pw-metadata -n default 0 default.audio.sink "{ \"name\": \"$SINK_NAME\" }" 2>/dev/null
+                fi
+              fi
+            fi
+          done
+        ''}";
+        Restart = "always";
+        RestartSec = "3s";
+        Environment = "PATH=/run/current-system/sw/bin";
+      };
+      Install = {
+        WantedBy = ["graphical-session.target"];
+      };
     };
     xdg = {
       mime.enable = true;
