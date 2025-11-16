@@ -188,7 +188,7 @@ in {
       wireplumber = {
         enable = true;
         configPackages = [
-          (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-disable-hdmi-autoswitch.conf" ''
+          (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-audio-priority.conf" ''
             monitor.alsa.rules = [
               {
                 matches = [
@@ -199,9 +199,9 @@ in {
                 ]
                 actions = {
                   update-props = {
-                    # Set very high priority for laptop speakers
-                    priority.driver = 3000
-                    priority.session = 3000
+                    # Set high priority for laptop speakers (fallback)
+                    priority.driver = 2000
+                    priority.session = 2000
                     node.pause-on-idle = false
                   }
                 }
@@ -236,6 +236,40 @@ in {
                   update-props = {
                     # Use the profile with Speaker output
                     device.profile = "HiFi (HDMI1, HDMI2, HDMI3, Headset, Mic1, Speaker)"
+                  }
+                }
+              }
+            ]
+
+            monitor.bluez.rules = [
+              {
+                matches = [
+                  {
+                    # Match all Bluetooth audio devices
+                    device.name = "~bluez_card.*"
+                  }
+                ]
+                actions = {
+                  update-props = {
+                    # Set highest priority for Bluetooth devices
+                    bluez5.auto-connect = [ "hfp_hf" "hsp_hs" "a2dp_sink" ]
+                    device.profile = "a2dp-sink"
+                  }
+                }
+              }
+              {
+                matches = [
+                  {
+                    # Match Bluetooth audio sinks
+                    node.name = "~bluez_output.*"
+                  }
+                ]
+                actions = {
+                  update-props = {
+                    # Set highest priority for Bluetooth audio
+                    priority.driver = 5000
+                    priority.session = 5000
+                    node.pause-on-idle = false
                   }
                 }
               }
@@ -317,10 +351,10 @@ in {
       home-manager.enable = true;
     };
 
-    # Systemd service to set default audio sink to laptop speakers
+    # Systemd service to set default audio sink (Bluetooth or laptop speakers)
     systemd.user.services.set-default-audio-sink = {
       Unit = {
-        Description = "Set default audio sink to laptop speakers";
+        Description = "Set default audio sink (Bluetooth headphones or laptop speakers)";
         After = ["pipewire.service" "wireplumber.service"];
         PartOf = ["graphical-session.target"];
       };
@@ -331,22 +365,29 @@ in {
           # Wait for WirePlumber to be ready
           sleep 3
 
-          # Find the laptop speaker sink by name
-          SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+          # First, try to find Bluetooth audio sink (highest priority)
+          SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep -E "bluez|Bluetooth" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+          SINK_TYPE="Bluetooth"
+
+          # If no Bluetooth found, fall back to laptop speaker
+          if [ -z "$SINK_ID" ]; then
+            SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+            SINK_TYPE="Speaker"
+          fi
 
           if [ -n "$SINK_ID" ]; then
             # Get the node name
             SINK_NAME=$(wpctl inspect "$SINK_ID" | ${pkgs.gnugrep}/bin/grep "node.name" | ${pkgs.gnused}/bin/sed 's/.*= "\(.*\)"/\1/')
 
             if [ -n "$SINK_NAME" ]; then
-              # Set the active default using PipeWire metadata (this is what actually works!)
+              # Set the active default using PipeWire metadata
               pw-metadata -n default 0 default.audio.sink "{ \"name\": \"$SINK_NAME\" }"
-              echo "Set default audio sink to Speaker (ID: $SINK_ID, Name: $SINK_NAME)"
+              echo "Set default audio sink to $SINK_TYPE (ID: $SINK_ID, Name: $SINK_NAME)"
             else
               echo "Could not get sink node name"
             fi
           else
-            echo "Could not find laptop speaker sink"
+            echo "Could not find any suitable audio sink"
           fi
         ''}";
         RemainAfterExit = true;
@@ -362,7 +403,7 @@ in {
     # Monitor for audio device changes and reset default
     systemd.user.services.monitor-audio-changes = {
       Unit = {
-        Description = "Monitor audio device changes and maintain laptop speakers as default";
+        Description = "Monitor audio device changes and auto-switch (Bluetooth > Speakers, never HDMI)";
         After = ["pipewire.service" "wireplumber.service"];
       };
       Service = {
@@ -373,7 +414,15 @@ in {
           pw-cli subscribe Device | while read -r line; do
             if echo "$line" | ${pkgs.gnugrep}/bin/grep -q "changed"; then
               sleep 1
-              SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+
+              # First, try to find Bluetooth audio sink (highest priority)
+              SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep -E "bluez|Bluetooth" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+
+              # If no Bluetooth found, fall back to laptop speaker
+              if [ -z "$SINK_ID" ]; then
+                SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
+              fi
+
               if [ -n "$SINK_ID" ]; then
                 SINK_NAME=$(wpctl inspect "$SINK_ID" 2>/dev/null | ${pkgs.gnugrep}/bin/grep "node.name" | ${pkgs.gnused}/bin/sed 's/.*= "\(.*\)"/\1/')
                 if [ -n "$SINK_NAME" ]; then
