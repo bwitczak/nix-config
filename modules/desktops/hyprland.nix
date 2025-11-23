@@ -521,20 +521,74 @@ in
                 ",switch:Lid Switch,exec,$HOME/.config/hypr/script/clamshell.sh"
               ]
               else [];
-            windowrulev2 = [
-              "float,title:^(Volume Control)$"
-              "keepaspectratio,class:^(firefox)$,title:^(Picture-in-Picture)$"
-              "noborder,class:^(firefox)$,title:^(Picture-in-Picture)$"
-              "float, title:^(Picture-in-Picture)$"
-              "size 24% 24%, title:(Picture-in-Picture)"
-              "move 75% 75%, title:(Picture-in-Picture)"
-              "pin, title:^(Picture-in-Picture)$"
-              "float, title:^(Firefox)$"
-              "size 24% 24%, title:(Firefox)"
-              "move 74% 74%, title:(Firefox)"
-              "pin, title:^(Firefox)$"
-              "opacity 0.9, class:^(kitty)"
-              "tile,initialTitle:^WPS.*"
+            windowrule = [
+              {
+                name = "float-volume-control";
+                "match:title" = "^(Volume Control)$";
+                float = true;
+              }
+              {
+                name = "firefox-pip-aspect-ratio";
+                "match:class" = "^(firefox)$";
+                "match:title" = "^(Picture-in-Picture)$";
+                keep_aspect_ratio = true;
+              }
+              {
+                name = "firefox-pip-no-border";
+                "match:class" = "^(firefox)$";
+                "match:title" = "^(Picture-in-Picture)$";
+                decorate = false;
+              }
+              {
+                name = "float-picture-in-picture";
+                "match:title" = "^(Picture-in-Picture)$";
+                float = true;
+              }
+              {
+                name = "size-picture-in-picture";
+                "match:title" = "(Picture-in-Picture)";
+                size = "24% 24%";
+              }
+              {
+                name = "move-picture-in-picture";
+                "match:title" = "(Picture-in-Picture)";
+                move = "75% 75%";
+              }
+              {
+                name = "pin-picture-in-picture";
+                "match:title" = "^(Picture-in-Picture)$";
+                pin = true;
+              }
+              {
+                name = "float-firefox-dialog";
+                "match:title" = "^(Firefox)$";
+                float = true;
+              }
+              {
+                name = "size-firefox-dialog";
+                "match:title" = "(Firefox)";
+                size = "24% 24%";
+              }
+              {
+                name = "move-firefox-dialog";
+                "match:title" = "(Firefox)";
+                move = "74% 74%";
+              }
+              {
+                name = "pin-firefox-dialog";
+                "match:title" = "^(Firefox)$";
+                pin = true;
+              }
+              {
+                name = "kitty-opacity";
+                "match:class" = "^(kitty)$";
+                opacity = 0.9;
+              }
+              {
+                name = "wps-tile";
+                "match:initial_title" = "^WPS.*";
+                tile = true;
+              }
             ];
             exec-once =
               [
