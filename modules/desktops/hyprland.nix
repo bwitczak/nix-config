@@ -141,10 +141,10 @@ in
 
       systemd.sleep.extraConfig = ''
         AllowSuspend=yes
-        AllowHibernation=yes
-        AllowSuspendThenHibernate=yes
-        AllowHybridSleep=yes
-      ''; # Clamshell Mode
+        AllowHibernation=no
+        AllowSuspendThenHibernate=no
+        AllowHybridSleep=no
+      '';
 
       # Add systemd services for better suspend/resume handling
       systemd.services.suspend-lock = {
