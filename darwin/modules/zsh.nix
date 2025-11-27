@@ -50,7 +50,6 @@
 
           alias ls="${pkgs.eza}/bin/eza --icons=always --color=always"
           alias finder="ofd" # open find in current path.
-          alias cd="z"
           alias cat="bat"
 
           #cdf will change directory to active finder directory
