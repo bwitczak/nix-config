@@ -86,31 +86,6 @@ in
           xwayland # X session
           nwg-look
         ];
-
-        # Add systemd sleep hook for suspend/resume handling
-        etc."systemd/system-sleep/hyprlock-suspend" = {
-          source = pkgs.writeShellScript "hyprlock-suspend" ''
-            #!/bin/sh
-            case $1 in
-              pre)
-                # Before suspend - ensure lock screen is active
-                for user in $(users); do
-                  sudo -u "$user" env WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock --immediate 2>/dev/null || true
-                done
-                ;;
-              post)
-                # After resume - ensure lock screen is still active
-                sleep 2
-                for user in $(users); do
-                  if ! sudo -u "$user" pidof hyprlock >/dev/null 2>&1; then
-                    sudo -u "$user" env WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock 2>/dev/null || true
-                  fi
-                done
-                ;;
-            esac
-          '';
-          mode = "0755";
-        };
       };
 
       programs.hyprland = {
@@ -145,51 +120,6 @@ in
         AllowSuspendThenHibernate=no
         AllowHybridSleep=no
       '';
-
-      # Add systemd services for better suspend/resume handling
-      systemd.services.suspend-lock = {
-        description = "Lock screen before suspend";
-        before = ["sleep.target"];
-        wantedBy = ["sleep.target"];
-        environment = {
-          DISPLAY = ":0";
-          WAYLAND_DISPLAY = "wayland-1";
-        };
-        serviceConfig = {
-          Type = "oneshot";
-          User = vars.user;
-          ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate";
-          TimeoutSec = "10";
-        };
-      };
-
-      systemd.services.resume-lock = {
-        description = "Ensure lock screen after resume";
-        after = ["suspend.target" "hibernate.target" "hybrid-sleep.target"];
-        wantedBy = ["suspend.target" "hibernate.target" "hybrid-sleep.target"];
-        environment = {
-          DISPLAY = ":0";
-          WAYLAND_DISPLAY = "wayland-1";
-        };
-        serviceConfig = {
-          Type = "oneshot";
-          User = vars.user;
-          ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 2 && if ! pidof hyprlock; then ${pkgs.hyprlock}/bin/hyprlock; fi'";
-          TimeoutSec = "10";
-        };
-      };
-
-      # Add systemd sleep hook for better suspend/resume handling
-      systemd.services.systemd-suspend-lock = {
-        description = "Lock screen on suspend";
-        before = ["sleep.target"];
-        wantedBy = ["sleep.target"];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.bash}/bin/bash -c 'for user in $(users); do sudo -u $user WAYLAND_DISPLAY=wayland-1 XDG_SESSION_TYPE=wayland ${pkgs.hyprlock}/bin/hyprlock --immediate 2>/dev/null || true; done'";
-          TimeoutSec = "5";
-        };
-      };
 
       nix.settings = {
         substituters = ["https://hyprland.cachix.org"];
@@ -643,40 +573,6 @@ in
               fi
             '';
             executable = true;
-          };
-        };
-
-        # Add systemd user services for session lock management
-        systemd.user.services.suspend-session-lock = {
-          Unit = {
-            Description = "Lock session before suspend";
-            Before = ["sleep.target"];
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.hyprlock}/bin/hyprlock --immediate";
-            Environment = [
-              "WAYLAND_DISPLAY=wayland-1"
-              "XDG_SESSION_TYPE=wayland"
-            ];
-          };
-          Install = {
-            WantedBy = ["sleep.target"];
-          };
-        };
-
-        systemd.user.services.resume-session-check = {
-          Unit = {
-            Description = "Ensure lock screen after resume";
-            After = ["graphical-session.target"];
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 3 && if ! pidof hyprlock && [ \"$XDG_SESSION_TYPE\" = \"wayland\" ]; then ${pkgs.hyprlock}/bin/hyprlock; fi'";
-            Environment = [
-              "WAYLAND_DISPLAY=wayland-1"
-              "XDG_SESSION_TYPE=wayland"
-            ];
           };
         };
       };
