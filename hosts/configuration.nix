@@ -288,6 +288,58 @@ in {
               }
             }
           '')
+          (pkgs.writeTextDir "share/wireplumber/main.lua.d/62-auto-default-sink.lua" ''
+            -- Auto-select default sink: prefer Bluetooth, then Speakers, ignore HDMI/DP
+            local default_nodes = require "default-nodes"
+
+            local sink_om = ObjectManager {
+              Interest {
+                type = "node",
+                Constraint { "media.class", "equals", "Audio/Sink" },
+              },
+            }
+
+            local function score(node)
+              local name = node.properties["node.name"] or ""
+              if string.match(name, "bluez_output") then
+                return 3
+              end
+              if string.match(name, "Speaker") then
+                return 2
+              end
+              if string.match(name, "HDMI") or string.match(name, "DisplayPort") then
+                return 0
+              end
+              return 1
+            end
+
+            local function pick_best()
+              local best = nil
+              local best_score = -1
+              for _, node in ipairs(sink_om:get_objects()) do
+                local s = score(node)
+                if s > best_score then
+                  best = node
+                  best_score = s
+                end
+              end
+              return best
+            end
+
+            local function set_default()
+              local best = pick_best()
+              if best ~= nil then
+                default_nodes.set_default_audio_sink(best)
+              end
+            end
+
+            sink_om:connect("object-added", set_default)
+            sink_om:connect("object-removed", set_default)
+            sink_om:activate()
+
+            -- initial selection
+            set_default()
+          '')
         ];
       };
     };
@@ -400,46 +452,6 @@ in {
       };
     };
 
-    # Monitor for audio device changes and reset default
-    systemd.user.services.monitor-audio-changes = {
-      Unit = {
-        Description = "Monitor audio device changes and auto-switch (Bluetooth > Speakers, never HDMI)";
-        After = ["pipewire.service" "wireplumber.service"];
-      };
-      Service = {
-        Type = "simple";
-        ExecStart = "${pkgs.writeShellScript "monitor-audio" ''
-          #!${pkgs.bash}/bin/bash
-          # Monitor WirePlumber events and reset default when devices change
-          pw-cli subscribe Device | while read -r line; do
-            if echo "$line" | ${pkgs.gnugrep}/bin/grep -q "changed"; then
-              sleep 1
-
-              # First, try to find Bluetooth audio sink (highest priority)
-              SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep -E "bluez|Bluetooth" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
-
-              # If no Bluetooth found, fall back to laptop speaker
-              if [ -z "$SINK_ID" ]; then
-                SINK_ID=$(wpctl status | ${pkgs.gnugrep}/bin/grep "Speaker" | ${pkgs.gnugrep}/bin/grep -v "HDMI" | ${pkgs.gnugrep}/bin/grep -v "DisplayPort" | ${pkgs.gnused}/bin/sed -n 's/[^0-9]*\([0-9]\+\)\..*/\1/p' | ${pkgs.coreutils}/bin/head -n1)
-              fi
-
-              if [ -n "$SINK_ID" ]; then
-                SINK_NAME=$(wpctl inspect "$SINK_ID" 2>/dev/null | ${pkgs.gnugrep}/bin/grep "node.name" | ${pkgs.gnused}/bin/sed 's/.*= "\(.*\)"/\1/')
-                if [ -n "$SINK_NAME" ]; then
-                  pw-metadata -n default 0 default.audio.sink "{ \"name\": \"$SINK_NAME\" }" 2>/dev/null
-                fi
-              fi
-            fi
-          done
-        ''}";
-        Restart = "always";
-        RestartSec = "3s";
-        Environment = "PATH=/run/current-system/sw/bin";
-      };
-      Install = {
-        WantedBy = ["graphical-session.target"];
-      };
-    };
     xdg = {
       mime.enable = true;
       mimeApps = lib.mkIf (config.gnome.enable == false) {
