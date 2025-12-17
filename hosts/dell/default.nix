@@ -71,8 +71,8 @@
   services.logind.settings = {
     Login = {
       HandleLidSwitch = "suspend"; # default on battery
-      HandleLidSwitchDocked = "ignore"; # don't suspend when docked/external displays
-      HandleLidSwitchExternalPower = "ignore"; # ignore lid on AC
+      HandleLidSwitchDocked = "suspend"; # don't suspend when docked/external displays
+      HandleLidSwitchExternalPower = "suspend"; # ignore lid on AC
     };
   };
 

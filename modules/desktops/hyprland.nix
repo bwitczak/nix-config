@@ -44,7 +44,7 @@ in
       };
 
       environment = let
-        exec = "exec dbus-launch Hyprland";
+        exec = "exec start-hyprland";
       in {
         loginShellInit = ''
           if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
@@ -108,7 +108,7 @@ in
         settings = {
           default_session = {
             # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-            command = "${config.programs.hyprland.package}/bin/Hyprland"; # tuigreet not needed with exec-once hyprlock
+            command = "start-hyprland"; # tuigreet not needed with exec-once hyprlock
             user = vars.user;
           };
         };
@@ -429,7 +429,7 @@ in
               "ALTSHIFT,left,movetoworkspace,-1"
 
               "SUPER,Z,layoutmsg,togglesplit"
-              ",print,exec,${pkgs.grimblast}/bin/grimblast --notify --freeze --wait 1 copysave area ~/Pictures/$(date +%Y-%m-%dT%H%M%S).png"
+              ",print,exec,${pkgs.grimblast}/bin/grimblast --notify --freeze --wait 1 copy area"
               ",XF86AudioLowerVolume,exec,${pkgs.pamixer}/bin/pamixer -d 10"
               ",XF86AudioRaiseVolume,exec,${pkgs.pamixer}/bin/pamixer -i 10"
               ",XF86AudioMute,exec,${pkgs.pamixer}/bin/pamixer -t"
@@ -458,14 +458,14 @@ in
                 float = true;
               }
               {
-                name = "firefox-pip-aspect-ratio";
-                "match:class" = "^(firefox)$";
+                name = "zen-pip-aspect-ratio";
+                "match:class" = "^(zen)$";
                 "match:title" = "^(Picture-in-Picture)$";
                 keep_aspect_ratio = true;
               }
               {
-                name = "firefox-pip-no-border";
-                "match:class" = "^(firefox)$";
+                name = "zen-pip-no-border";
+                "match:class" = "^(zen)$";
                 "match:title" = "^(Picture-in-Picture)$";
                 decorate = false;
               }
@@ -490,23 +490,23 @@ in
                 pin = true;
               }
               {
-                name = "float-firefox-dialog";
-                "match:title" = "^(Firefox)$";
+                name = "float-zen-dialog";
+                "match:title" = "^(zen)$";
                 float = true;
               }
               {
-                name = "size-firefox-dialog";
-                "match:title" = "(Firefox)";
+                name = "size-zen-dialog";
+                "match:title" = "(zen)";
                 size = "24% 24%";
               }
               {
-                name = "move-firefox-dialog";
-                "match:title" = "(Firefox)";
+                name = "move-zen-dialog";
+                "match:title" = "(zen)";
                 move = "74% 74%";
               }
               {
-                name = "pin-firefox-dialog";
-                "match:title" = "^(Firefox)$";
+                name = "pin-zen-dialog";
+                "match:title" = "^(zen)$";
                 pin = true;
               }
               {
