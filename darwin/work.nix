@@ -89,7 +89,7 @@
       # "logitech-options"
       "figma"
       "cursor"
-      "microsoft-edge"
+      # "microsoft-edge"
       "zen"
       "raycast"
       "logi-options+"
