@@ -76,6 +76,24 @@
     };
   };
 
+  # Fix immediate wakeups from suspend when using external monitor/dock
+  systemd.services.disable-wakeup = {
+    description = "Disable wake-up for XHC and other problematic devices";
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "disable-wakeup" ''
+        devices=("XHC" "XHC1" "XHCI" "TXHC" "TbtUsb" "RP06" "RP07")
+        for dev in "''${devices[@]}"; do
+          if grep -q "$dev.*enabled" /proc/acpi/wakeup; then
+            echo "Disabling wakeup for $dev"
+            echo $dev > /proc/acpi/wakeup
+          fi
+        done
+      '';
+    };
+  };
+
   security.pam.services = {
     login.fprintAuth = true;
     sudo.fprintAuth = true;
