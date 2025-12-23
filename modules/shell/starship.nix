@@ -27,7 +27,7 @@
       command_timeout = 1000;
 
       character = {
-        vicmd_symbol = "[N] >>>";
+        vicmd_symbol = "\\[N\\] >>>";
         success_symbol = "[➜](bold green)";
       };
 
@@ -61,7 +61,7 @@
           {
             context_pattern = "arn:aws:eks:us-west-2:577926974532:cluster/zd-pvc-omer";
             style = "green";
-            context_alias = "omerxx";
+            context_alias = "bwitczak";
             symbol = " ";
           }
         ];
