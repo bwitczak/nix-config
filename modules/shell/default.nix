@@ -15,4 +15,5 @@
   ./direnv.nix
   ./zellij.nix
   ./starship.nix
+  ./nh.nix
 ]

@@ -163,11 +163,11 @@
   security.pam.services.sudo_local.touchIdAuth = true;
   nix = {
     package = pkgs.nix;
-    gc = {
-      automatic = true;
-      interval.Day = 7;
-      options = "--delete-older-than 7d";
-    };
+    # gc = {
+    #   automatic = true;
+    #   interval.Day = 7;
+    #   options = "--delete-older-than 7d";
+    # };
     extraOptions = ''
       # auto-optimise-store = true
       experimental-features = nix-command flakes

@@ -42,11 +42,11 @@
       timeout = null;
     };
     # Prefer deep sleep over s2idle; tweak USB/i8042 for reliable resume
-    kernelParams = [
-      "mem_sleep_default=deep"
-      "usbcore.autosuspend=-1"
-      "i8042.reset"
-    ];
+    # kernelParams = [
+    #   "mem_sleep_default=deep"
+    #   "usbcore.autosuspend=-1"
+    #   "i8042.reset"
+    # ];
   };
 
   laptop.enable = true;
@@ -59,6 +59,7 @@
       meld
       code-cursor
       lazygit
+      zoxide
     ];
   };
 
