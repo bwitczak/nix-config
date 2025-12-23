@@ -36,10 +36,16 @@
         enable = true;
         devices = ["nodev"];
         efiSupport = true;
-        configurationLimit = 2;
+        extraConfig = ''
+          GRUB_GFXMODE=3072x1920x32,auto
+          GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=2"
+          GRUB_GFXPAYLOAD_LINUX="keep"
+        '';
+        configurationLimit = 10; # default is like 100? Too much
+        theme = lib.cleanSource ../../modules/theming/arcade;
         default = 2;
       };
-      timeout = null;
+      timeout = 5;
     };
     # Prefer deep sleep over s2idle; tweak USB/i8042 for reliable resume
     # kernelParams = [
