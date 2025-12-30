@@ -26,6 +26,11 @@
       shellInit = ''
         # Starship
         eval "$(starship init zsh)"
+        eval "$(zoxide init zsh)"
+
+        # Aliases
+        alias z="zoxide"
+
         # Hook direnv
         #emulate zsh -c "$(direnv hook zsh)"
 
