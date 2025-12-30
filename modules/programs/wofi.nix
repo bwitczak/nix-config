@@ -1,13 +1,15 @@
 #
 #  System Menu
 #
-
-{ config, lib, pkgs, vars, ... }:
-
-let
-  colors = import ../theming/colors.nix;
-in
 {
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  colors = import ../theming/colors.nix;
+in {
   config = lib.mkIf (config.wlwm.enable) {
     home-manager.users.${vars.user} = {
       home = {
@@ -85,7 +87,7 @@ in
           text = ''
             #!/bin/sh
 
-            entries="󰍃 Logout\n󰒲 Suspend\n Reboot\n⏻ Shutdown"
+            entries="󰍃 Logout\n󰒲 Suspend\n󰤄 Hibernate\n Reboot\n⏻ Shutdown"
 
             selected=$(echo -e $entries|wofi --dmenu --cache-file /dev/null | awk '{print tolower($2)}')
 
@@ -94,10 +96,12 @@ in
                 exec hyprctl dispatch exit;;
               suspend)
                 exec systemctl suspend;;
+              hibernate)
+                exec systemctl hibernate;;
               reboot)
                 exec systemctl reboot;;
               shutdown)
-                exec systemctl poweroff -i;;
+                exec shutdown -h now;;
             esac
           '';
         };
