@@ -13,6 +13,11 @@
   programs.zsh.enable = true;
 
   home-manager.users.${vars.user} = {
+    programs.zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     programs.zsh = {
       enable = true;
       autosuggestion.enable = true;
@@ -25,13 +30,9 @@
       #   plugins = ["git"];
       # };
 
-      initExtra = ''
+      initContent = ''
         # Starship
         eval "$(starship init zsh)"
-        eval "$(zoxide init zsh --cmd cd)"
-
-        # Aliases
-        alias z="zoxide"
 
         # Hook direnv
         #emulate zsh -c "$(direnv hook zsh)"
