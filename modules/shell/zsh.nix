@@ -26,7 +26,7 @@
       shellInit = ''
         # Starship
         eval "$(starship init zsh)"
-        eval "$(zoxide init zsh)"
+        eval "$(zoxide init zsh --cmd cd)"
 
         # Aliases
         alias z="zoxide"
@@ -56,6 +56,10 @@
         # Fix ALT+Backspace to delete words instead of entering vim mode
         bindkey '\e\b' backward-kill-word
         bindkey '\e^H' backward-kill-word
+
+        # Enable CTRL+left/right to jump words
+        bindkey '^[[1;5D' backward-word    # CTRL+left
+        bindkey '^[[1;5C' forward-word     # CTRL+right
       '';
     };
   };
