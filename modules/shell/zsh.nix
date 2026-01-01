@@ -10,20 +10,22 @@
     shell = pkgs.zsh;
   };
 
-  programs = {
-    zsh = {
+  programs.zsh.enable = true;
+
+  home-manager.users.${vars.user} = {
+    programs.zsh = {
       enable = true;
-      autosuggestions.enable = true;
+      autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       enableCompletion = true;
-      histSize = 100000;
+      history.size = 100000;
 
-      # ohMyZsh = {
+      # oh-my-zsh = {
       #   enable = true;
       #   plugins = ["git"];
       # };
 
-      shellInit = ''
+      initExtra = ''
         # Starship
         eval "$(starship init zsh)"
         eval "$(zoxide init zsh --cmd cd)"
