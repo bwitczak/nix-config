@@ -391,7 +391,7 @@ in {
       dns = "systemd-resolved";
     };
     wireless = {
-      iwd.enable = true;
+      enable = true;
     };
   };
   home-manager.backupFileExtension = "backup";
