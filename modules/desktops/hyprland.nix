@@ -31,7 +31,7 @@ in
       # XDG desktop portals so apps can read settings (including dark mode) under Hyprland
       xdg.portal = {
         enable = true;
-        xdgOpenUsePortal = true;
+        xdgOpenUsePortal = false; # Disable portal for xdg-open to use traditional method (open links in Zen Browser)
         extraPortals = [
           pkgs.xdg-desktop-portal-gtk
         ];
