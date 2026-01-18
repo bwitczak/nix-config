@@ -139,6 +139,7 @@ in {
         # firefox # Browser
         # google-chrome # Browser
         # remmina # XRDP & VNC Client
+        libreoffice
 
         # File Management
         file-roller # Archive Manager
