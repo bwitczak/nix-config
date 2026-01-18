@@ -78,6 +78,7 @@ in
           }
           else {};
         systemPackages = with pkgs; [
+          socat
           grimblast # Screenshot
           hyprcursor # Cursor
           hyprpaper # Wallpaper
@@ -395,6 +396,7 @@ in
               "SUPERSHIFT,R,exec,${config.programs.hyprland.package}/bin/hyprctl reload"
               "SUPER,T,exec,${pkgs.${vars.terminal}}/bin/${vars.terminal} -e vi"
               "SUPER,K,exec,${config.programs.hyprland.package}/bin/hyprctl switchxkblayout keychron-k8-keychron-k8 next"
+              "SUPER,D,exec,$HOME/.config/hypr/script/toggle-monitor.sh"
               "SUPER,left,movefocus,l"
               "SUPER,right,movefocus,r"
               "SUPER,up,movefocus,u"
@@ -523,6 +525,7 @@ in
             exec-once =
               [
                 "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+                "$HOME/.config/hypr/script/monitor-hotplug.sh"
                 "${pkgs.hyprlock}/bin/hyprlock"
                 "ln -s $XDG_RUNTIME_DIR/hypr /tmp/hypr"
                 "${pkgs.waybar}/bin/waybar -c $HOME/.config/waybar/config"
@@ -557,18 +560,63 @@ in
         };
 
         home.file = {
+          ".config/hypr/script/monitor-hotplug.sh" = {
+            text = ''
+              #!/bin/sh
+              ${pkgs.socat}/bin/socat - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+                if [[ "$line" == "monitoradded"* ]] || [[ "$line" == "monitorremoved"* ]]; then
+                  $HOME/.config/hypr/script/clamshell.sh
+                fi
+              done
+            '';
+            executable = true;
+          };
+
+          ".config/hypr/script/toggle-monitor.sh" = {
+            text = ''
+              #!/bin/sh
+              MONITOR="${secondMonitor}"
+              if [ -z "$MONITOR" ]; then
+                exit 0
+              fi
+
+              if ${config.programs.hyprland.package}/bin/hyprctl monitors | grep "$MONITOR"; then
+                # Create a lock file to prevent suspend in clamshell.sh
+                touch /tmp/hypr-monitor-toggle-lock
+                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "$MONITOR, disable"
+                # Remove lock file after a short delay
+                sleep 2
+                rm /tmp/hypr-monitor-toggle-lock
+              else
+                # Enable monitor by reloading config which contains the definition
+                ${config.programs.hyprland.package}/bin/hyprctl reload
+              fi
+            '';
+            executable = true;
+          };
+
           ".config/hypr/script/clamshell.sh" = {
             text = ''
               #!/bin/sh
+              # Always ensure main monitor is enabled
+              ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, preferred, auto, 1.333"
 
               if grep open /proc/acpi/button/lid/${lid}/state; then
-                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, 3072x1920, 0x0, 1"
+                # Lid is open, nothing else to do
+                exit 0
               else
-                if [[ `hyprctl monitors | grep "Monitor" | wc -l` != 1 ]]; then
-                  ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, disable"
-                else
-                  # Use the suspend script which handles locking
-                  ${suspendScript}
+                # Check if toggle lock exists
+                if [ -f /tmp/hypr-monitor-toggle-lock ]; then
+                  exit 0
+                fi
+
+                # Lid is closed
+                if [[ `hyprctl monitors | grep "Monitor" | wc -l` == 1 ]]; then
+                   # Only one monitor active (presumably the main one we just enabled, but if lid is closed we want suspend)
+                   # But we just enabled the main monitor!
+                   # If we suspend now, we can't use the laptop with lid closed + no external monitor.
+                   # BUT, the user wants suspend on close lid.
+                   ${suspendScript}
                 fi
               fi
             '';
