@@ -140,6 +140,7 @@ in {
         # google-chrome # Browser
         # remmina # XRDP & VNC Client
         libreoffice
+        chromium
 
         # File Management
         file-roller # Archive Manager
