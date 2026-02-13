@@ -174,6 +174,8 @@ in {
     };
   };
 
+  services.udisks2.enable = true;
+
   services.pulseaudio.enable = false;
   services = {
     # printing = {
