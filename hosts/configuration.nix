@@ -400,6 +400,10 @@ in {
   home-manager.users.${vars.user} = {
     home = {
       stateVersion = "25.05";
+      sessionVariables = {
+        PNPM_HOME = "$HOME/.local/share/pnpm";
+        PATH = "$HOME/.local/share/pnpm:$PATH";
+      };
     };
     programs = {
       home-manager.enable = true;
