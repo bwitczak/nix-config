@@ -73,6 +73,7 @@ in {
     rtkit.enable = true;
     polkit.enable = true;
     sudo.wheelNeedsPassword = true;
+    pki.certificateFiles = [./certs/mkcert-rootCA.pem];
   };
 
   fonts.packages = with pkgs; [
