@@ -73,6 +73,7 @@ in {
     rtkit.enable = true;
     polkit.enable = true;
     sudo.wheelNeedsPassword = true;
+    pki.certificateFiles = [./certs/mkcert-rootCA.pem];
   };
 
   fonts.packages = with pkgs; [
@@ -390,6 +391,10 @@ in {
   networking = {
     hostName = host.hostName;
     nameservers = ["1.1.1.1" "1.1.1.3"];
+    extraHosts = ''
+      127.0.0.1   shiptech.localhost
+      127.0.0.1   traefik.shiptech.localhost
+    '';
     networkmanager = {
       enable = true;
       dns = "systemd-resolved";
