@@ -394,6 +394,8 @@ in {
     extraHosts = ''
       127.0.0.1   shiptech.localhost
       127.0.0.1   traefik.shiptech.localhost
+      10.0.0.21   grafana.localhost
+      10.0.0.21   traefik-monitoring.localhost
     '';
     networkmanager = {
       enable = true;
