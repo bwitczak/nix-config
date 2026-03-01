@@ -1,12 +1,14 @@
 #
 #  Git
 #
-
 {
   pkgs,
   vars,
   ...
-}: {
+}: let
+  colors = import ../theming/colors.nix;
+  hex = colors.colors.hex;
+in {
   home-manager.users.${vars.user} = {
     programs.git = {
       enable = true;
@@ -22,7 +24,7 @@
           submodule = "log";
           tool = "meld";
         };
-        difftool.promt = false;
+        difftool.prompt = false;
         commit.verbose = true;
         rerere = {
           enabled = 1;
@@ -42,6 +44,22 @@
         push.autoSetupRemote = true;
       };
     };
+
+    programs.delta = {
+      enable = true;
+      enableGitIntegration = true;
+      options = {
+        navigate = true;
+        line-numbers = true;
+        # Use theme colors from modules/theming/colors.nix
+        minus-style = "syntax #${hex.red}";
+        plus-style = "syntax #${hex.green}";
+        minus-emph-style = "syntax #${hex.red}";
+        plus-emph-style = "syntax #${hex.green}";
+        line-numbers-minus-style = "#${hex.comment}";
+        line-numbers-plus-style = "#${hex.cyan}";
+        line-numbers-zero-style = "#${hex.gray}";
+      };
+    };
   };
-  
 }
