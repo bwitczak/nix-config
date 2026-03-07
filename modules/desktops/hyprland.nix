@@ -115,12 +115,14 @@ in
         };
       };
 
-      systemd.sleep.extraConfig = ''
-        AllowSuspend=yes
-        AllowHibernation=no
-        AllowSuspendThenHibernate=no
-        AllowHybridSleep=no
-      '';
+      systemd.sleep.settings = {
+        Sleep = {
+          AllowSuspend = "yes";
+          AllowHibernation = "no";
+          AllowSuspendThenHibernate = "no";
+          AllowHybridSleep = "no";
+        };
+      };
 
       nix.settings = {
         substituters = ["https://hyprland.cachix.org"];
@@ -438,8 +440,8 @@ in
               "SUPER_L,c,exec,${pkgs.pamixer}/bin/pamixer --default-source -t"
               "CTRL,F10,exec,${pkgs.pamixer}/bin/pamixer -t"
               ",XF86AudioMicMute,exec,${pkgs.pamixer}/bin/pamixer --default-source -t"
-              ",XF86MonBrightnessDown,exec,${pkgs.light}/bin/light -U 10"
-              ",XF86MonBrightnessUP,exec,${pkgs.light}/bin/light -A 10"
+              ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl set 10%-"
+              ",XF86MonBrightnessUP,exec,${pkgs.brightnessctl}/bin/brightnessctl set 10%+"
             ];
             binde = [
               "SUPERCTRL,right,resizeactive,60 0"

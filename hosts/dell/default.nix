@@ -66,10 +66,9 @@
       code-cursor
       lazygit
       zoxide
+      brightnessctl # brightness control (replacement for unmaintained 'light' package)
     ];
   };
-
-  programs.light.enable = true;
 
   # Fingerprint support (NixOS manual: services.fprintd + PAM fprintAuth)
   services.fprintd.enable = true;
