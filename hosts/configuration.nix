@@ -376,7 +376,13 @@ in {
       keep-derivations      = true
     '';
   };
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    # code-cursor and similar depend on electron_*; nixpkgs may pin an EOL Electron
+    permittedInsecurePackages = [
+      "electron-38.8.4"
+    ];
+  };
 
   system = {
     # autoUpgrade = {
