@@ -24,9 +24,8 @@
       };
     };
 
-    gtk = lib.mkIf (config.gnome.enable == false) {
-      enable = true;
-      theme = {
+    gtk = lib.mkIf (config.gnome.enable == false) (let
+      gtkTheme = {
         #name = "Dracula";
         #name = "Catppuccin-Mocha-Compact-Blue-Dark";
         name = "Orchis-Dark-Compact";
@@ -38,6 +37,10 @@
         # };
         package = pkgs.orchis-theme;
       };
+    in {
+      enable = true;
+      theme = gtkTheme;
+      gtk4.theme = gtkTheme; # silence HM warning; same as legacy default until stateVersion ≥ 26.05
       iconTheme = {
         name = "Papirus-Dark";
         package = pkgs.papirus-icon-theme;
@@ -53,7 +56,7 @@
       gtk4.extraConfig = {
         color-scheme = "prefer-dark";
       };
-    };
+    });
 
     # qt = {
     #   enable = true;
