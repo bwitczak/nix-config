@@ -457,6 +457,11 @@ in
               else [];
             windowrule = [
               {
+                name = "steam-fullscreen";
+                "match:class" = "^(steam_app_.*)$";
+                fullscreen = true;
+              }
+              {
                 name = "float-volume-control";
                 "match:title" = "^(Volume Control)$";
                 float = true;
