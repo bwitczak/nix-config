@@ -13,6 +13,7 @@
   # ./avahi.nix
   # ./dunst.nix
   ./flameshot.nix
+  ./printing.nix
   # ./picom.nix
   # ./polybar.nix
   # ./samba.nix
