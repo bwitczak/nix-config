@@ -3,7 +3,7 @@
 # Run with: nix build -f zen-browser.nix
 {pkgs ? import <nixpkgs> {}}: let
   pname = "zen-browser";
-  version = "1.19.6b";
+  version = "1.19.12b";
 in
   pkgs.appimageTools.wrapType2 {
     inherit pname version;
@@ -11,7 +11,7 @@ in
     src = pkgs.fetchurl {
       # url = "https://updates.zen-browser.app/releases/zen-browser-${version}-x86_64.AppImage";
       url = "https://github.com/zen-browser/desktop/releases/download/${version}/zen-x86_64.AppImage";
-      sha256 = "aed6343f7209f83bbadd17f056759b840247cb0ff31ca5055c96c3442cabca86";
+      sha256 = "31d7ae39da4c5308d44af4d149d5d77302676ca78bdd3e4ad3e2b8e481f9ca2b";
     };
 
     extraInstallCommands = ''
