@@ -389,7 +389,7 @@ in {
     #   enable = true;
     #   channel = "https://nixos.org/channels/nixos-unstable";
     # };
-    stateVersion = "25.05";
+    stateVersion = "26.05";
   };
 
   services.resolved.enable = true;
@@ -408,7 +408,7 @@ in {
   home-manager.backupFileExtension = "backup";
   home-manager.users.${vars.user} = {
     home = {
-      stateVersion = "25.05";
+      stateVersion = "26.05";
       sessionVariables = {
         PNPM_HOME = "$HOME/.local/share/pnpm";
         PATH = "$HOME/.local/share/pnpm:$PATH";
