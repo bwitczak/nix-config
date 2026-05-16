@@ -92,10 +92,10 @@ in
         programs.waybar = {
           enable = true;
           package = pkgs.waybar;
-          # systemd = {
-          #   enable = true;
-          #   target = "hyprland-session.target";
-          # };
+          systemd = {
+            enable = true;
+            targets = ["hyprland-session.target"];
+          };
 
           style = ''
             * {

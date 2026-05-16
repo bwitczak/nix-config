@@ -12,7 +12,7 @@
 [
   # ./bspwm.nix
   # ./gnome.nix
-  ./hyprland.nix
+  ./hyprland
   # ./kde.nix
   ./options.nix
   # ./river.nix

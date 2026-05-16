@@ -1,0 +1,462 @@
+#
+#  Hyprland Configuration
+#  Enable with "hyprland.enable = true;"
+#
+{
+  config,
+  lib,
+  pkgs,
+  hyprland,
+  hyprspace,
+  vars,
+  host,
+  ...
+}: let
+  colors = import ../../theming/colors.nix;
+  inherit (colors.scheme.default.hex) bg active inactive;
+
+  hostName = host.hostName;
+
+  laptopHosts = ["dell" "xps" "probook"];
+  lidSwitchHosts = ["xps" "dell"];
+
+  touchpadBlock =
+    if builtins.elem hostName laptopHosts
+    then ''
+      touchpad = {
+        natural_scroll = true,
+        scroll_factor = 0.2,
+        middle_button_emulation = true,
+        tap_to_click = true,
+      },
+    ''
+    else "touchpad = {},";
+
+  monitorsBlock =
+    if hostName == "dell"
+    then ''
+      hl.monitor({
+        output = "${host.mainMonitor}",
+        mode = "preferred",
+        position = "auto",
+        scale = 1.333,
+      })
+      hl.monitor({
+        output = "${host.secondMonitor}",
+        mode = "preferred",
+        position = "auto",
+        scale = 1.06666667,
+      })
+    ''
+    else ''
+      hl.monitor({
+        output = "",
+        mode = "preferred",
+        position = "auto",
+        scale = 1.333,
+      })
+    '';
+
+  secondMonitorScale =
+    if hostName == "dell"
+    then "1.06666667"
+    else "1.333";
+
+  lidBindBlock =
+    if builtins.elem hostName lidSwitchHosts
+    then ''
+      hl.bind(
+        "switch:Lid Switch",
+        hl.dsp.exec_cmd("$HOME/.config/hypr/script/clamshell.sh"),
+        { locked = true }
+      )
+      hl.bind(
+        "switch:off:Lid Switch",
+        hl.dsp.exec_cmd("${pkgs.hyprlock}/bin/hyprlock"),
+        { locked = true }
+      )
+    ''
+    else "";
+
+  execOnceExtra =
+    if hostName == "dell" || hostName == "xps"
+    then ''
+      hl.exec_cmd("${pkgs.networkmanagerapplet}/bin/nm-applet --indicator &")
+    ''
+    else "";
+
+  gestures = "";
+
+  hyprctlBin = "${config.programs.hyprland.package}/bin/hyprctl";
+  terminalBin = "${pkgs.${vars.terminal}}/bin/${vars.terminal}";
+
+  suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
+    #!/bin/sh
+
+    is_locked() {
+      pidof hyprlock >/dev/null 2>&1
+    }
+
+    lock_session() {
+      if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$WAYLAND_DISPLAY" ]; then
+        ${pkgs.hyprlock}/bin/hyprlock --immediate &
+        sleep 2
+      fi
+    }
+
+    if ! is_locked; then
+      lock_session
+    fi
+
+    sleep 1
+    ${pkgs.systemd}/bin/systemctl suspend
+  '';
+
+  hyprlandLua = pkgs.replaceVars ./hyprland.lua {
+    inherit hostName bg active inactive execOnceExtra;
+    monitors = monitorsBlock;
+    touchpad = touchpadBlock;
+    lidBind = lidBindBlock;
+    inherit gestures;
+    terminal = terminalBin;
+    hyprctl = hyprctlBin;
+    suspendScript = "${suspendScript}";
+    hyprlock = "${pkgs.hyprlock}/bin/hyprlock";
+    pcmanfm = "${pkgs.pcmanfm}/bin/pcmanfm";
+    wofi = "${pkgs.wofi}/bin/wofi";
+    grimblast = "${pkgs.grimblast}/bin/grimblast";
+    pamixer = "${pkgs.pamixer}/bin/pamixer";
+    brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+    eww = "${pkgs.eww}/bin/eww";
+    blueman = "${pkgs.blueman}/bin/blueman-applet";
+    swaync = "${pkgs.swaynotificationcenter}/bin/swaync";
+    polkit = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+  };
+in
+  with lib;
+  with host; {
+    options = {
+      hyprland = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+        };
+      };
+    };
+
+    config = mkIf (config.hyprland.enable) {
+      wlwm.enable = true;
+
+      xdg.portal = {
+        enable = true;
+        xdgOpenUsePortal = false;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+        ];
+        config.common = {
+          default = ["hyprland" "gtk"];
+          "org.freedesktop.impl.portal.Settings" = "gtk";
+          "org.freedesktop.impl.portal.FileChooser" = "gtk";
+        };
+      };
+
+      environment = let
+        exec = "exec start-hyprland";
+      in {
+        loginShellInit = ''
+          if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+            ${exec}
+          fi
+        '';
+
+        variables = {
+          XDG_CURRENT_DESKTOP = "Hyprland";
+          XDG_SESSION_TYPE = "wayland";
+          XDG_SESSION_DESKTOP = "Hyprland";
+          XCURSOR = "Catppuccin-Mocha-Dark-Cursors";
+          XCURSOR_SIZE = 24;
+          NIXOS_OZONE_WL = 1;
+          SDL_VIDEODRIVER = "wayland";
+          OZONE_PLATFORM = "wayland";
+          CLUTTER_BACKEND = "wayland";
+          QT_QPA_PLATFORM = "wayland;xcb";
+          QT_QPA_PLATFORMTHEME = "qt6ct";
+          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+          QT_AUTO_SCREEN_SCALE_FACTOR = 1;
+          GDK_BACKEND = "wayland";
+          MOZ_ENABLE_WAYLAND = "1";
+        };
+        sessionVariables =
+          if hostName == "xps"
+          then {
+            QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+            GDK_BACKEND = "wayland";
+            MOZ_ENABLE_WAYLAND = "1";
+          }
+          else {};
+        systemPackages = with pkgs; [
+          socat
+          grimblast
+          hyprcursor
+          hyprpaper
+          wl-clipboard
+          wlr-randr
+          xwayland
+          nwg-look
+        ];
+      };
+
+      programs.hyprland = {
+        enable = true;
+        package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      };
+
+      security.pam.services.hyprlock = {
+        text = "auth include login";
+        fprintAuth =
+          if hostName == "xps"
+          then true
+          else false;
+        enableGnomeKeyring = true;
+      };
+
+      services.greetd = {
+        enable = true;
+        settings = {
+          default_session = {
+            command = "start-hyprland";
+            user = vars.user;
+          };
+        };
+      };
+
+      systemd.sleep.settings = {
+        Sleep = {
+          AllowSuspend = "yes";
+          AllowHibernation = "no";
+          AllowSuspendThenHibernate = "no";
+          AllowHybridSleep = "no";
+        };
+      };
+
+      nix.settings = {
+        substituters = ["https://hyprland.cachix.org"];
+        trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+      };
+
+      home-manager.users.${vars.user} = let
+        lid =
+          if hostName == "xps"
+          then "LID0"
+          else "LID";
+        lockScript = pkgs.writeShellScript "lock-script" ''
+          action=$1
+
+          audio_playing=false
+          if ${pkgs.pipewire}/bin/pw-cli i all 2>/dev/null | ${pkgs.ripgrep}/bin/rg -q "state.*running"; then
+            audio_playing=true
+          fi
+
+          if [ "$audio_playing" = true ]; then
+            exit 0
+          fi
+
+          if [ "$action" == "lock" ]; then
+            if ! pidof ${pkgs.hyprlock}/bin/hyprlock; then
+              ${pkgs.hyprlock}/bin/hyprlock
+            fi
+          elif [ "$action" == "suspend" ]; then
+            ${suspendScript}
+          fi
+        '';
+      in {
+        programs.hyprlock = with colors.scheme.default; {
+          enable = true;
+          settings = {
+            general = {
+              hide_cursor = true;
+              no_fade_in = false;
+              disable_loading_bar = true;
+              grace = 0;
+            };
+            background = [
+              {
+                monitor = "";
+                path = "$HOME/.config/wall.png";
+                color = "rgba(${rgb.bg}, 1.0)";
+                blur_passes = 1;
+                blur_size = 0;
+                brightness = 0.2;
+              }
+            ];
+            input-field = [
+              {
+                monitor = "";
+                size = "250, 60";
+                outline_thickness = 2;
+                dots_size = 0.2;
+                dots_spacing = 0.2;
+                dots_center = true;
+                outer_color = "rgba(${rgb.black}, 0)";
+                inner_color = "rgba(${rgb.black}, 0.5)";
+                font_color = "rgb(${rgb.fg})";
+                fade_on_empty = false;
+                placeholder_text = "Input Password...";
+                hide_input = false;
+                position = "0, -120";
+                halign = "center";
+                valign = "center";
+              }
+            ];
+            label = [
+              {
+                monitor = "";
+                text = "$TIME";
+                font_size = 120;
+                position = "0, 80";
+                valign = "center";
+                halign = "center";
+              }
+            ];
+          };
+        };
+
+        services.hypridle = {
+          enable = true;
+          settings = {
+            general = {
+              before_sleep_cmd = "${pkgs.hyprlock}/bin/hyprlock --immediate";
+              after_sleep_cmd = "${config.programs.hyprland.package}/bin/hyprctl dispatch dpms on";
+              ignore_dbus_inhibit = false;
+              lock_cmd = "pidof ${pkgs.hyprlock}/bin/hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
+            };
+            listener = [
+              {
+                timeout = 180;
+                on-timeout = "${lockScript.outPath} lock";
+              }
+              {
+                timeout = 300;
+                on-timeout = "${lockScript.outPath} suspend";
+              }
+            ];
+          };
+        };
+
+        services.hyprpaper = let
+          wallPath = "/home/${vars.user}/.config/wall.png";
+        in {
+          enable = true;
+          settings = {
+            ipc = true;
+            splash = false;
+            wallpaper = [
+              {
+                monitor = "";
+                path = wallPath;
+                fit_mode = "cover";
+              }
+            ]
+            ++ lib.optional (hostName == "dell") {
+              monitor = "${host.mainMonitor}";
+              path = wallPath;
+              fit_mode = "cover";
+            }
+            ++ lib.optional (hostName == "dell" && host.secondMonitor != "") {
+              monitor = "${host.secondMonitor}";
+              path = wallPath;
+              fit_mode = "cover";
+            };
+          };
+        };
+
+        # Start after Hyprland session (not graphical-session) so the compositor exists
+        systemd.user.services.hyprpaper = {
+          Unit = {
+            After = ["hyprland-session.target"];
+            PartOf = ["hyprland-session.target"];
+          };
+          Install = {
+            WantedBy = ["hyprland-session.target"];
+          };
+        };
+
+        wayland.windowManager.hyprland = {
+          enable = true;
+          configType = "lua";
+          package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+          xwayland.enable = true;
+          settings = {};
+          extraConfig = builtins.readFile hyprlandLua;
+          # plugins = [
+          #   hyprspace.packages.${pkgs.stdenv.hostPlatform.system}.Hyprspace
+          # ];
+        };
+
+        home.file = {
+          ".config/hypr/script/monitor-hotplug.sh" = {
+            text = ''
+              #!/bin/sh
+              ${pkgs.socat}/bin/socat - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+                if [[ "$line" == "monitoradded"* ]] || [[ "$line" == "monitorremoved"* ]]; then
+                  $HOME/.config/hypr/script/clamshell.sh
+                fi
+              done
+            '';
+            executable = true;
+          };
+
+          ".config/hypr/script/toggle-monitor.sh" = {
+            text = ''
+              #!/bin/sh
+              MONITOR="${secondMonitor}"
+              SCALE="${secondMonitorScale}"
+
+              if [ -z "$MONITOR" ]; then
+                exit 0
+              fi
+
+              monitor_enabled() {
+                ${hyprctlBin} monitors -j | ${pkgs.jq}/bin/jq -e --arg m "$MONITOR" \
+                  '.[] | select(.name == $m and .disabled == false)' >/dev/null
+              }
+
+              touch /tmp/hypr-monitor-toggle-lock
+
+              if monitor_enabled; then
+                ${hyprctlBin} eval "hl.monitor({output=\"$MONITOR\", disabled=true})"
+              else
+                ${hyprctlBin} eval "hl.monitor({output=\"$MONITOR\", disabled=false, mode=\"preferred\", position=\"auto\", scale=$SCALE})"
+                ${hyprctlBin} hyprpaper wallpaper ",$HOME/.config/wall.png,cover" 2>/dev/null || true
+              fi
+
+              sleep 2
+              rm -f /tmp/hypr-monitor-toggle-lock
+            '';
+            executable = true;
+          };
+
+          ".config/hypr/script/clamshell.sh" = {
+            text = ''
+              #!/bin/sh
+              ${hyprctlBin} eval "hl.monitor({output=\"${toString mainMonitor}\", disabled=false, mode=\"preferred\", position=\"auto\", scale=1.333})"
+              ${hyprctlBin} hyprpaper wallpaper ",$HOME/.config/wall.png,cover" 2>/dev/null || true
+
+              if grep open /proc/acpi/button/lid/${lid}/state; then
+                exit 0
+              else
+                if [ -f /tmp/hypr-monitor-toggle-lock ]; then
+                  exit 0
+                fi
+
+                if ! pidof hyprlock >/dev/null 2>&1; then
+                  ${pkgs.hyprlock}/bin/hyprlock
+                fi
+              fi
+            '';
+            executable = true;
+          };
+        };
+      };
+    };
+  }
