@@ -10,6 +10,25 @@
 }: let
   colors = import ../theming/colors.nix;
   inherit (colors.scheme.default) hex rgb;
+
+  hyprlockBin = "${pkgs.hyprlock}/bin/hyprlock";
+  lockNow = "${hyprlockBin} --grace 0";
+
+  suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
+    #!/bin/sh
+
+    if ! pgrep -x hyprlock >/dev/null 2>&1; then
+      ${lockNow} &
+      i=0
+      while [ "$i" -lt 25 ]; do
+        pgrep -x hyprlock >/dev/null 2>&1 && break
+        i=$((i + 1))
+        sleep 0.1
+      done
+    fi
+
+    ${pkgs.systemd}/bin/systemctl suspend
+  '';
 in {
   config = lib.mkIf (config.wlwm.enable) {
     home-manager.users.${vars.user} = {
@@ -37,23 +56,21 @@ in {
             insensitive=true
           '';
         };
-        # Power menu (waybar NixOS icon)
-        ".config/wofi/dmenu" = {
+        ".config/wofi/power-config" = {
           text = ''
-            width=100%
-            height=27
-            xoffset=0
-            yoffset=-27
-            location=bottom
-            prompt=
+            show=dmenu
+            width=40%
+            height=50%
+            location=center
+            prompt=Power...
             filter_rate=100
             allow_markup=false
-            no_actions=true
-            halign=fill
-            orientation=horizontal
-            content_halign=fill
+            allow_images=true
+            image_size=40
+            hide_scroll=false
+            orientation=vertical
             insensitive=true
-            hide_scroll=true
+            lines=5
           '';
         };
         ".config/wofi/style.css" = {
@@ -110,18 +127,18 @@ in {
 
             entries="󰍃 Logout\n󰒲 Suspend\n󰤄 Hibernate\n Reboot\n⏻ Shutdown"
 
-            selected=$(echo -e $entries | ${pkgs.wofi}/bin/wofi --conf "$HOME/.config/wofi/dmenu" --dmenu --cache-file /dev/null | awk '{print tolower($2)}')
+            selected=$(printf '%b\n' "$entries" | ${pkgs.wofi}/bin/wofi --conf "$HOME/.config/wofi/power-config" --style "$HOME/.config/wofi/style.css" --dmenu --cache-file /dev/null)
 
-            case $selected in
-              logout)
+            case "$selected" in
+              "󰍃 Logout")
                 exec hyprctl dispatch exit;;
-              suspend)
-                exec systemctl suspend;;
-              hibernate)
+              "󰒲 Suspend")
+                exec ${suspendScript};;
+              "󰤄 Hibernate")
                 exec systemctl hibernate;;
-              reboot)
+              " Reboot")
                 exec systemctl reboot;;
-              shutdown)
+              "⏻ Shutdown")
                 exec shutdown -h now;;
             esac
           '';

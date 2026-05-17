@@ -90,25 +90,38 @@
   hyprctlBin = "${config.programs.hyprland.package}/bin/hyprctl";
   terminalBin = "${pkgs.${vars.terminal}}/bin/${vars.terminal}";
 
+  hyprlockBin = "${pkgs.hyprlock}/bin/hyprlock";
+
+  # --immediate is broken in hyprlock 0.9.5; --grace 0 locks without a grace period.
+  lockNow = "${hyprlockBin} --grace 0";
+
+  waitForHyprlock = ''
+    i=0
+    while [ "$i" -lt 25 ]; do
+      pgrep -x hyprlock >/dev/null 2>&1 && exit 0
+      i=$((i + 1))
+      sleep 0.1
+    done
+    exit 1
+  '';
+
+  beforeSleepScript = pkgs.writeShellScript "before-sleep-lock" ''
+    #!/bin/sh
+    if ! pgrep -x hyprlock >/dev/null 2>&1; then
+      ${lockNow} &
+      ${waitForHyprlock}
+    fi
+  '';
+
+  afterSleepScript = pkgs.writeShellScript "after-sleep-lock" ''
+    #!/bin/sh
+    # Hyprland 0.55+ enables displays on input; lock on wake (foreground).
+    exec ${lockNow}
+  '';
+
   suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
     #!/bin/sh
-
-    is_locked() {
-      pidof hyprlock >/dev/null 2>&1
-    }
-
-    lock_session() {
-      if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$WAYLAND_DISPLAY" ]; then
-        ${pkgs.hyprlock}/bin/hyprlock --immediate &
-        sleep 2
-      fi
-    }
-
-    if ! is_locked; then
-      lock_session
-    fi
-
-    sleep 1
+    ${beforeSleepScript}
     ${pkgs.systemd}/bin/systemctl suspend
   '';
 
@@ -121,7 +134,7 @@
     terminal = terminalBin;
     hyprctl = hyprctlBin;
     suspendScript = "${suspendScript}";
-    hyprlock = "${pkgs.hyprlock}/bin/hyprlock";
+    hyprlock = hyprlockBin;
     pcmanfm = "${pkgs.pcmanfm}/bin/pcmanfm";
     wofi = "${pkgs.wofi}/bin/wofi";
     grimblast = "${pkgs.grimblast}/bin/grimblast";
@@ -262,8 +275,8 @@ in
           fi
 
           if [ "$action" == "lock" ]; then
-            if ! pidof ${pkgs.hyprlock}/bin/hyprlock; then
-              ${pkgs.hyprlock}/bin/hyprlock
+            if ! pgrep -x hyprlock >/dev/null 2>&1; then
+              ${lockNow}
             fi
           elif [ "$action" == "suspend" ]; then
             ${suspendScript}
@@ -275,9 +288,6 @@ in
           settings = {
             general = {
               hide_cursor = true;
-              no_fade_in = false;
-              disable_loading_bar = true;
-              grace = 0;
             };
             background = [
               {
@@ -325,10 +335,10 @@ in
           enable = true;
           settings = {
             general = {
-              before_sleep_cmd = "${pkgs.hyprlock}/bin/hyprlock --immediate";
-              after_sleep_cmd = "${config.programs.hyprland.package}/bin/hyprctl dispatch dpms on";
+              before_sleep_cmd = "${beforeSleepScript}";
+              after_sleep_cmd = "${afterSleepScript}";
               ignore_dbus_inhibit = false;
-              lock_cmd = "pidof ${pkgs.hyprlock}/bin/hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
+              lock_cmd = "pgrep -x hyprlock >/dev/null 2>&1 || ${lockNow}";
             };
             listener = [
               {
