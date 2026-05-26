@@ -64,6 +64,7 @@
       git-filter-repo
       meld
       code-cursor
+      nixd # Nix IDE language server (nix.serverPath default)
       lazygit
       zoxide
       brightnessctl # brightness control (replacement for unmaintained 'light' package)
