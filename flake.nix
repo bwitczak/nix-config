@@ -56,6 +56,12 @@
       url = "github:harishnkr/bsol";
       flake = false;
     };
+
+    # Caelestia desktop shell (Quickshell bar, launcher, notifications)
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {

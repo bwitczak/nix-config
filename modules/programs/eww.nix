@@ -5,7 +5,7 @@
 { config, lib, pkgs, vars, ... }:
 
 {
-  config = lib.mkIf (config.wlwm.enable) {
+  config = lib.mkIf (config.wlwm.enable && !config.caelestia.enable) {
     environment.systemPackages = with pkgs; [
       eww # Widgets
       jq # JSON Processor

@@ -30,7 +30,7 @@
     ${pkgs.systemd}/bin/systemctl suspend
   '';
 in {
-  config = lib.mkIf (config.wlwm.enable) {
+  config = lib.mkIf (config.wlwm.enable && !config.caelestia.enable) {
     home-manager.users.${vars.user} = {
       home = {
         packages = with pkgs; [

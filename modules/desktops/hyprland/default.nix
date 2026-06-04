@@ -85,6 +85,29 @@
     ''
     else "";
 
+  ewwAutostart =
+    if config.caelestia.enable or false
+    then ""
+    else ''
+      hl.exec_cmd("${pkgs.eww}/bin/eww daemon &")
+    '';
+
+  swayncAutostart =
+    if config.caelestia.enable or false
+    then ""
+    else ''
+      hl.exec_cmd("${pkgs.swaynotificationcenter}/bin/swaync &")
+    '';
+
+  launcherKeybind =
+    if config.caelestia.enable or false
+    then ''
+      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("caelestia shell drawers toggle launcher"))
+    ''
+    else ''
+      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("pkill wofi || ${pkgs.wofi}/bin/wofi --show drun"))
+    '';
+
   gestures = "";
 
   hyprctlBin = "${config.programs.hyprland.package}/bin/hyprctl";
@@ -126,7 +149,7 @@
   '';
 
   hyprlandLua = pkgs.replaceVars ./hyprland.lua {
-    inherit hostName bg active inactive execOnceExtra;
+    inherit hostName bg active inactive execOnceExtra ewwAutostart swayncAutostart launcherKeybind;
     monitors = monitorsBlock;
     touchpad = touchpadBlock;
     lidBind = lidBindBlock;
@@ -136,13 +159,10 @@
     suspendScript = "${suspendScript}";
     hyprlock = hyprlockBin;
     pcmanfm = "${pkgs.pcmanfm}/bin/pcmanfm";
-    wofi = "${pkgs.wofi}/bin/wofi";
     grimblast = "${pkgs.grimblast}/bin/grimblast";
     pamixer = "${pkgs.pamixer}/bin/pamixer";
     brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
-    eww = "${pkgs.eww}/bin/eww";
     blueman = "${pkgs.blueman}/bin/blueman-applet";
-    swaync = "${pkgs.swaynotificationcenter}/bin/swaync";
     polkit = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
   };
 in
@@ -158,6 +178,7 @@ in
     };
 
     config = mkIf (config.hyprland.enable) {
+      caelestia.enable = true;
       wlwm.enable = true;
 
       xdg.portal = {

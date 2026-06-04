@@ -83,7 +83,7 @@ hl.bind("SUPER + S", hl.dsp.exec_cmd("@suspendScript@"))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("@hyprlock@"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("@pcmanfm@"))
 hl.bind("SUPER + F", hl.dsp.window.float({ action = "toggle" }))
-hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("pkill wofi || @wofi@ --show drun"))
+@launcherKeybind@
 hl.bind("SUPER + P", hl.dsp.window.pseudo())
 hl.bind("F11", hl.dsp.window.fullscreen())
 hl.bind("SUPER + R", hl.dsp.force_renderer_reload())
@@ -269,9 +269,9 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("ln -sf $XDG_RUNTIME_DIR/hypr /tmp/hypr")
 	hl.exec_cmd("@hyprlock@")
 	hl.exec_cmd("systemctl --user restart hyprpaper.service")
-	hl.exec_cmd("@eww@ daemon &")
+	@ewwAutostart@
 	hl.exec_cmd("@blueman@ &")
-	hl.exec_cmd("@swaync@ &")
+	@swayncAutostart@
 	hl.exec_cmd("@polkit@ &")
 	@execOnceExtra@
 end)
