@@ -50,6 +50,12 @@
       url = "github:KZDKM/Hyprspace";
       inputs.hyprland.follows = "hyprland";
     };
+
+    # GRUB Blue Screen of Life theme
+    bsol = {
+      url = "github:harishnkr/bsol";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

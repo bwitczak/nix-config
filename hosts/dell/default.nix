@@ -17,6 +17,7 @@
 #               └─ default.nix
 #
 {
+  inputs,
   pkgs,
   lib,
   vars,
@@ -42,7 +43,7 @@
           GRUB_GFXPAYLOAD_LINUX="keep"
         '';
         configurationLimit = 10; # default is like 100? Too much
-        theme = lib.cleanSource ../../modules/theming/arcade;
+        theme = "${inputs.bsol}/bsol";
         default = 2;
       };
       timeout = 5;
