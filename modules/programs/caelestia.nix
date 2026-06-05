@@ -64,7 +64,10 @@
         explorer = ["pcmanfm"];
         audio = ["pavucontrol"];
       };
-      general.idle.timeouts = [];
+      general.idle = {
+        lockBeforeSleep = true;
+        timeouts = [];
+      };
       lock.enableFprint = config.services.fprintd.enable or false;
       paths.wallpaperDir = "~/Pictures/Wallpapers";
       services = {
@@ -149,6 +152,9 @@ in {
                 .session = ((.session // {})
                   | .commands = ((.commands // {}) + {hibernate: ["systemctl", "suspend"]})
                   | .icons = ((.icons // {}) + {hibernate: "bedtime"})
+                )
+                | .general = ((.general // {})
+                  | .idle = ((.idle // {}) + {lockBeforeSleep: true})
                 )
               ' "''${config}" > "''${tmp}"
               mv "''${tmp}" "''${config}"

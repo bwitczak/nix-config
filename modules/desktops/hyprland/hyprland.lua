@@ -80,7 +80,7 @@ hl.bind("SUPER + RETURN", hl.dsp.exec_cmd(terminal))
 hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + ESCAPE", hl.dsp.exit())
 hl.bind("SUPER + S", hl.dsp.exec_cmd("@suspendScript@"))
-hl.bind("SUPER + L", hl.dsp.exec_cmd("@hyprlock@"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("@lockScript@"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("@pcmanfm@"))
 hl.bind("SUPER + F", hl.dsp.window.float({ action = "toggle" }))
 @launcherKeybind@
@@ -267,7 +267,7 @@ hl.on("hyprland.start", function()
 	-- Background long-running processes (&). monitor-hotplug blocks without it.
 	hl.exec_cmd("$HOME/.config/hypr/script/monitor-hotplug.sh &")
 	hl.exec_cmd("ln -sf $XDG_RUNTIME_DIR/hypr /tmp/hypr")
-	hl.exec_cmd("@hyprlock@")
+	@lockAutostart@
 	hl.exec_cmd("systemctl --user restart hyprpaper.service")
 	@ewwAutostart@
 	hl.exec_cmd("@blueman@ &")
