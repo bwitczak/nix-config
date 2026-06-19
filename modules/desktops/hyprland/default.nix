@@ -245,15 +245,7 @@ in
         };
       };
 
-      environment = let
-        exec = "exec start-hyprland";
-      in {
-        loginShellInit = ''
-          if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-            ${exec}
-          fi
-        '';
-
+      environment = {
         variables = {
           XDG_CURRENT_DESKTOP = "Hyprland";
           XDG_SESSION_TYPE = "wayland";
@@ -307,10 +299,10 @@ in
 
       services.greetd = {
         enable = true;
+        useTextGreeter = true;
         settings = {
           default_session = {
-            command = "start-hyprland";
-            user = vars.user;
+            command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
           };
         };
       };
