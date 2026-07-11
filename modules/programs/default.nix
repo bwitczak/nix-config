@@ -20,6 +20,7 @@
   ./rofi.nix
   ./waybar.nix
   ./wofi.nix
-  ./games.nix
+  # ./games.nix
+  ./geforce-now.nix
   ./zen-browser.nix
 ]
