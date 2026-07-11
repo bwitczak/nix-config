@@ -24,8 +24,9 @@
     postFixup =
       (old.postFixup or "")
       + ''
+        siteDir=$(echo "$out"/lib/python3*/site-packages)
         cp -r ${./caelestia/schemes/witcher} \
-          $out/lib/python3.13/site-packages/caelestia/data/schemes/witcher
+          "$siteDir/caelestia/data/schemes/witcher"
       '';
   });
 
@@ -39,6 +40,7 @@
         withI3 = false;
       };
       caelestia-cli = caelestiaCliWithWitcher;
+      m3shapes = inputs.caelestia-shell.inputs.m3shapes;
       withCli = true;
     });
 

@@ -163,7 +163,7 @@ in {
       ++ (with stable; [
         # Apps
         # firefox # Browser
-        image-roll # Image Viewer
+        # image-roll # Image Viewer
       ]);
   };
 
@@ -472,8 +472,8 @@ in {
       mimeApps = lib.mkIf (config.gnome.enable == false) {
         enable = true;
         defaultApplications = {
-          "image/jpeg" = ["image-roll.desktop" "feh.desktop"];
-          "image/png" = ["image-roll.desktop" "feh.desktop"];
+          "image/jpeg" = ["feh.desktop"];
+          "image/png" = ["feh.desktop"];
           "text/plain" = "nvim.desktop";
           "text/html" = "nvim.desktop";
           "text/csv" = "nvim.desktop";
@@ -495,11 +495,11 @@ in {
           "inode/directory" = "pcmanfm.desktop";
         };
       };
-      desktopEntries.image-roll = {
-        name = "image-roll";
-        exec = "${stable.image-roll}/bin/image-roll %F";
-        mimeType = ["image/*"];
-      };
+      # desktopEntries.image-roll = {
+      #   name = "image-roll";
+      #   exec = "${stable.image-roll}/bin/image-roll %F";
+      #   mimeType = ["image/*"];
+      # };
       desktopEntries.gmail = {
         name = "Gmail";
         exec = ''xdg-open "https://mail.google.com/mail/?view=cm&fs=1&to=%u"'';
