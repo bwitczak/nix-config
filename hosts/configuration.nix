@@ -407,6 +407,10 @@ in {
   };
   home-manager.backupFileExtension = "backup";
   home-manager.users.${vars.user} = {
+    programs.direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
     home = {
       stateVersion = "26.05";
       sessionVariables = {

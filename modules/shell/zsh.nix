@@ -27,8 +27,6 @@ in {
 
       # Use fd instead of find (faster, respects .gitignore)
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
-      fileWidgetCommand = "fd --type f --hidden --follow --exclude .git";
-      changeDirWidgetCommand = "fd --type d --hidden --follow --exclude .git";
 
       defaultOptions = [
         "--height 50%"
@@ -40,15 +38,21 @@ in {
         "--cycle"
       ];
 
-      fileWidgetOptions = [
-        "--preview 'bat --style=numbers --color=always --line-range :500 {} 2>/dev/null || head -n 50 {}'"
-      ];
+      fileWidget = {
+        command = "fd --type f --hidden --follow --exclude .git";
+        options = [
+          "--preview 'bat --style=numbers --color=always --line-range :500 {} 2>/dev/null || head -n 50 {}'"
+        ];
+      };
 
-      changeDirWidgetOptions = [
-        "--preview 'tree -C -L 2 {} | head -100'"
-      ];
+      changeDirWidget = {
+        command = "fd --type d --hidden --follow --exclude .git";
+        options = [
+          "--preview 'tree -C -L 2 {} | head -100'"
+        ];
+      };
 
-      historyWidgetOptions = [
+      historyWidget.options = [
         "--sort"
         "--exact"
       ];

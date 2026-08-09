@@ -1,5 +1,5 @@
 #
-#  GTK
+#  GTK — Fantasy Night
 #
 {
   lib,
@@ -8,15 +8,31 @@
   host,
   vars,
   ...
-}: {
+}: let
+  colors = import ./colors.nix;
+  inherit (colors.scheme.default.hex) bg fg active inactive text orange;
+  # Catppuccin mocha+peach is the closest packaged GTK base to Fantasy Night's
+  # campfire orange accents; CSS below pulls exact palette from colors.nix.
+  gtkThemeName = "catppuccin-mocha-peach-compact";
+  gtkTheme = {
+    name = gtkThemeName;
+    package = pkgs.catppuccin-gtk.override {
+      accents = ["peach"];
+      size = "compact";
+      variant = "mocha";
+    };
+  };
+in {
   home-manager.users.${vars.user} = {
     home = {
       file.".config/wall.png".source = ./wall.png;
       # file.".config/wall.mp4".source = ./wall.mp4;
       pointerCursor = {
+        enable = true;
         gtk.enable = true;
-        name = "Dracula-cursors";
-        package = pkgs.dracula-theme;
+        # Dracula cursors went with pkgs.dracula-theme (removed: gtk-engine-murrine/GTK2)
+        name = "Bibata-Modern-Classic";
+        package = pkgs.bibata-cursors;
         size =
           if host.hostName == "xps"
           then 26
@@ -24,20 +40,7 @@
       };
     };
 
-    gtk = lib.mkIf (config.gnome.enable == false) (let
-      gtkTheme = {
-        #name = "Dracula";
-        #name = "Catppuccin-Mocha-Compact-Blue-Dark";
-        name = "Orchis-Dark-Compact";
-        #package = pkgs.dracula-theme;
-        # package = pkgs.catppuccin-gtk.override {
-        #   accents = ["blue"];
-        #   size = "compact";
-        #   variant = "mocha";
-        # };
-        package = pkgs.orchis-theme;
-      };
-    in {
+    gtk = lib.mkIf (config.gnome.enable == false) {
       enable = true;
       theme = gtkTheme;
       gtk4.theme = gtkTheme; # silence HM warning; same as legacy default until stateVersion ≥ 26.05
@@ -56,7 +59,63 @@
       gtk4.extraConfig = {
         color-scheme = "prefer-dark";
       };
-    });
+
+      # Fantasy Night palette overlays (modules/theming/colors.nix)
+      gtk3.extraCss = ''
+        @define-color fantasy_bg #${bg};
+        @define-color fantasy_fg #${fg};
+        @define-color fantasy_active #${active};
+        @define-color fantasy_inactive #${inactive};
+        @define-color fantasy_text #${text};
+        @define-color fantasy_orange #${orange};
+
+        window, .background {
+          background-color: @fantasy_bg;
+          color: @fantasy_fg;
+        }
+
+        *:selected, *:selected:focus {
+          background-color: @fantasy_active;
+          color: @fantasy_bg;
+        }
+
+        headerbar, .titlebar {
+          background-color: @fantasy_inactive;
+          color: @fantasy_fg;
+        }
+
+        button:checked, button:active, switch:checked {
+          background-color: @fantasy_active;
+        }
+      '';
+      gtk4.extraCss = ''
+        @define-color fantasy_bg #${bg};
+        @define-color fantasy_fg #${fg};
+        @define-color fantasy_active #${active};
+        @define-color fantasy_inactive #${inactive};
+        @define-color fantasy_text #${text};
+        @define-color fantasy_orange #${orange};
+
+        window, .background {
+          background-color: @fantasy_bg;
+          color: @fantasy_fg;
+        }
+
+        *:selected, *:selected:focus {
+          background-color: @fantasy_active;
+          color: @fantasy_bg;
+        }
+
+        headerbar, .titlebar {
+          background-color: @fantasy_inactive;
+          color: @fantasy_fg;
+        }
+
+        button:checked, button:active, switch:checked {
+          background-color: @fantasy_active;
+        }
+      '';
+    };
 
     # qt = {
     #   enable = true;
@@ -71,9 +130,9 @@
     dconf.settings = {
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
-        gtk-theme = "Orchis-Dark-Compact";
+        gtk-theme = gtkThemeName;
         icon-theme = "Papirus-Dark";
-        cursor-theme = "Dracula-cursors";
+        cursor-theme = "Bibata-Modern-Classic";
       };
     };
   };
