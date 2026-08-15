@@ -157,30 +157,34 @@
 
   beforeSleepScript =
     if useCaelestiaLock
-    then pkgs.writeShellScript "before-sleep-lock" ''
-      #!/bin/sh
-      if caelestia shell lock isLocked 2>/dev/null | grep -qx true; then
-        exit 0
-      fi
-      ${caelestiaLockScript}
-      ${waitForCaelestiaLock}
-    ''
-    else pkgs.writeShellScript "before-sleep-lock" ''
-      #!/bin/sh
-      if ! pgrep -x hyprlock >/dev/null 2>&1; then
-        ${lockNow} &
-        ${waitForHyprlock}
-      fi
-    '';
+    then
+      pkgs.writeShellScript "before-sleep-lock" ''
+        #!/bin/sh
+        if caelestia shell lock isLocked 2>/dev/null | grep -qx true; then
+          exit 0
+        fi
+        ${caelestiaLockScript}
+        ${waitForCaelestiaLock}
+      ''
+    else
+      pkgs.writeShellScript "before-sleep-lock" ''
+        #!/bin/sh
+        if ! pgrep -x hyprlock >/dev/null 2>&1; then
+          ${lockNow} &
+          ${waitForHyprlock}
+        fi
+      '';
 
   afterSleepScript =
     if useCaelestiaLock
-    then pkgs.writeShellScript "after-sleep-lock" ''
+    then
+      pkgs.writeShellScript "after-sleep-lock" ''
         #!/bin/sh
         # Caelestia lock persists through suspend; unlock via its PAM UI
         exit 0
       ''
-    else pkgs.writeShellScript "after-sleep-lock" ''
+    else
+      pkgs.writeShellScript "after-sleep-lock" ''
         #!/bin/sh
         # Hyprland 0.55+ enables displays on input; lock on wake (foreground).
         exec ${lockNow}
@@ -440,23 +444,24 @@ in
           settings = {
             ipc = true;
             splash = false;
-            wallpaper = [
-              {
-                monitor = "";
+            wallpaper =
+              [
+                {
+                  monitor = "";
+                  path = wallPath;
+                  fit_mode = "cover";
+                }
+              ]
+              ++ lib.optional (hostName == "dell") {
+                monitor = "${host.mainMonitor}";
                 path = wallPath;
                 fit_mode = "cover";
               }
-            ]
-            ++ lib.optional (hostName == "dell") {
-              monitor = "${host.mainMonitor}";
-              path = wallPath;
-              fit_mode = "cover";
-            }
-            ++ lib.optional (hostName == "dell" && host.secondMonitor != "") {
-              monitor = "${host.secondMonitor}";
-              path = wallPath;
-              fit_mode = "cover";
-            };
+              ++ lib.optional (hostName == "dell" && host.secondMonitor != "") {
+                monitor = "${host.secondMonitor}";
+                path = wallPath;
+                fit_mode = "cover";
+              };
           };
         };
 
@@ -527,6 +532,29 @@ in
 
               sleep 2
               rm -f /tmp/hypr-monitor-toggle-lock
+            '';
+            executable = true;
+          };
+
+          ".config/hypr/script/move-workspaces-to-monitor.sh" = {
+            text = ''
+              #!/bin/sh
+              DST="${secondMonitor}"
+
+              if [ -z "$DST" ]; then
+                exit 0
+              fi
+
+              ${hyprctlBin} eval "
+                local m = hl.get_monitor(\"$DST\")
+                if m then
+                  for _, ws in ipairs(hl.get_workspaces()) do
+                    if not ws.special then
+                      m:set_workspace(ws.id)
+                    end
+                  end
+                end
+              "
             '';
             executable = true;
           };

@@ -94,6 +94,7 @@ hl.bind(
 	hl.dsp.exec_cmd(hyprctl .. " switchxkblayout keychron-k8-keychron-k8 next")
 )
 hl.bind("SUPER + D", hl.dsp.exec_cmd("$HOME/.config/hypr/script/toggle-monitor.sh"))
+hl.bind("SUPER + M", hl.dsp.exec_cmd("$HOME/.config/hypr/script/move-workspaces-to-monitor.sh"))
 hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
 hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
 hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
