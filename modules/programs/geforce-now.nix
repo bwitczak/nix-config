@@ -25,7 +25,13 @@ in {
       ${flatpak} remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
       ${flatpak} remote-add --if-not-exists --system GeForceNOW ${gfnRemote}
       ${flatpak} install --assumeyes --noninteractive --or-update --system flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
-      ${flatpak} install --assumeyes --noninteractive --or-update --system GeForceNOW com.nvidia.geforcenow
+      if ! ${flatpak} install --assumeyes --noninteractive --or-update --system GeForceNOW com.nvidia.geforcenow; then
+        if ${flatpak} info --system com.nvidia.geforcenow &>/dev/null; then
+          echo "GeForce NOW already installed; remote version is not newer, skipping update"
+        else
+          exit 1
+        fi
+      fi
       ${flatpak} override --system --nosocket=wayland com.nvidia.geforcenow || true
     '';
   };
