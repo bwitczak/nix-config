@@ -3,7 +3,11 @@
 # Run with: nix build -f zen-browser.nix
 {pkgs ? import <nixpkgs> {}}: let
   pname = "zen-browser";
-  version = "1.21.10b";
+  version = "1.21.15b";
+
+  # Zen dlopens libavcodec for H.264/AAC (YouTube live streams). Firefox 146+
+  # expects libavcodec.so.62, provided by ffmpeg 8.
+  ffmpegPackage = pkgs.ffmpeg_8;
 
   icon128 = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/zen-browser/desktop/${version}/configs/branding/release/logo128.png";
@@ -21,8 +25,17 @@ in
     src = pkgs.fetchurl {
       # url = "https://updates.zen-browser.app/releases/zen-browser-${version}-x86_64.AppImage";
       url = "https://github.com/zen-browser/desktop/releases/download/${version}/zen-x86_64.AppImage";
-      sha256 = "4fa68e4b004bf9fe2ac4ab4446761c062ad3c56655e8a5abddcad582a1e57283";
+      sha256 = "349704871522e0085f3b505d629009490eefb3f06ee67a87ea106dcb1395ccfe";
     };
+
+    extraPkgs = pkgs: with pkgs; [
+      ffmpegPackage.lib
+      libva
+    ];
+
+    profile = ''
+      export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ffmpegPackage.lib]}''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
+    '';
 
     extraInstallCommands = ''
             mkdir -p $out/share/applications
