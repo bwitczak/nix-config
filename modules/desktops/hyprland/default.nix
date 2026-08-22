@@ -236,21 +236,6 @@ in
       caelestia.enable = true;
       wlwm.enable = true;
 
-      # Drop once https://github.com/NixOS/nixpkgs/pull/549253 lands on nixos-unstable.
-      # glaze 8.0.0 broke hyprland: CMake wants glaze 7...<8, then FetchContent fails in the sandbox.
-      nixpkgs.overlays = [
-        (_final: prev: {
-          hyprland = prev.hyprland.overrideAttrs (oldAttrs: {
-            postPatch =
-              ''
-                substituteInPlace CMakeLists.txt start/CMakeLists.txt hyprpm/CMakeLists.txt \
-                  --replace-fail "glaze 7...<8" "glaze"
-              ''
-              + (oldAttrs.postPatch or "");
-          });
-        })
-      ];
-
       xdg.portal = {
         enable = true;
         xdgOpenUsePortal = false;
