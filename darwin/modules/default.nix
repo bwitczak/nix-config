@@ -10,7 +10,7 @@
 #
 [
   # ./aerospace.nix
-  ./alacritty.nix
+  ./rio.nix
   # ./kitty.nix
   # ./skhd.nix
   ./git.nix

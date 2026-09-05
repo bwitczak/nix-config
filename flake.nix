@@ -83,7 +83,7 @@
     vars = {
       user = "bwitczak";
       location = "$HOME/.setup";
-      terminal = "alacritty";
+      terminal = "rio";
       editor = "vi";
     };
   in {

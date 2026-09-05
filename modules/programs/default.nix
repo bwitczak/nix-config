@@ -10,7 +10,7 @@
 #           └─ ...
 #
 [
-  ./alacritty.nix
+  ./rio.nix
   ./accounts.nix
   ./caelestia.nix
   ./eww.nix

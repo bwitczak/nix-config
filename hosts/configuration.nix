@@ -359,15 +359,13 @@ in {
 
   # flatpak.enable = true;
 
+  # Store GC is handled by programs.nh.clean (see modules/shell/nh.nix).
+  # Do not enable nix.gc.automatic at the same time — the two timers conflict.
   nix = {
     settings = {
       auto-optimise-store = true;
     };
-    # gc = {
-    #   automatic = true;
-    #   dates = "weekly";
-    #   options = "--delete-older-than 2d";
-    # };
+    gc.automatic = false;
     # package = pkgs.nixVersions.latest;
     registry.nixpkgs.flake = inputs.nixpkgs;
     extraOptions = ''
@@ -376,6 +374,12 @@ in {
       keep-derivations      = true
     '';
   };
+
+  # Cap journald so logs do not grow without bound
+  services.journald.extraConfig = ''
+    SystemMaxUse=500M
+    MaxRetentionSec=7day
+  '';
   nixpkgs.config = {
     allowUnfree = true;
     # code-cursor and similar depend on electron_*; nixpkgs may pin an EOL Electron

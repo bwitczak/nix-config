@@ -5,10 +5,7 @@
   pkgs,
   vars,
   ...
-}: let
-  colors = import ../theming/colors.nix;
-  hex = colors.colors.hex;
-in {
+}: {
   users.users.${vars.user} = {
     shell = pkgs.zsh;
   };
@@ -21,60 +18,19 @@ in {
       enableZshIntegration = true;
     };
 
-    programs.fzf = {
+    programs.atuin = {
       enable = true;
       enableZshIntegration = true;
-
-      # Use fd instead of find (faster, respects .gitignore)
-      defaultCommand = "fd --type f --hidden --follow --exclude .git";
-
-      defaultOptions = [
-        "--height 50%"
-        "--border rounded"
-        "--layout=reverse-list"
-        "--pointer →"
-        "--marker ⇒"
-        "--preview-window=right:60%:wrap"
-        "--cycle"
-      ];
-
-      fileWidget = {
-        command = "fd --type f --hidden --follow --exclude .git";
-        options = [
-          "--preview 'bat --style=numbers --color=always --line-range :500 {} 2>/dev/null || head -n 50 {}'"
-        ];
-      };
-
-      changeDirWidget = {
-        command = "fd --type d --hidden --follow --exclude .git";
-        options = [
-          "--preview 'tree -C -L 2 {} | head -100'"
-        ];
-      };
-
-      historyWidget.options = [
-        "--sort"
-        "--exact"
-      ];
-
-      colors = {
-        fg = "#${hex.fg}";
-        bg = "#${hex.bg}";
-        "fg+" = "#${hex.fg}";
-        "bg+" = "#${hex.inactive}";
-        hl = "#${hex.orange}";
-        "hl+" = "#${hex.orange}";
-        info = "#${hex.cyan}";
-        prompt = "#${hex.cyan}";
-        pointer = "#${hex.orange}";
-        marker = "#${hex.green}";
-        spinner = "#${hex.cyan}";
-        header = "#${hex.comment}";
+      settings = {
+        search_mode = "fuzzy";
+        filter_mode = "global";
+        style = "compact";
+        enter_accept = true;
       };
     };
 
-    # Required for fzf file/dir widgets + dev UX (eza = modern ls)
-    home.packages = [pkgs.fd pkgs.bat pkgs.tree pkgs.eza];
+    # eza = modern ls
+    home.packages = [pkgs.eza];
 
     programs.zsh = {
       enable = true;
