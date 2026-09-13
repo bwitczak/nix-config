@@ -40,8 +40,54 @@
         withI3 = false;
       };
       caelestia-cli = caelestiaCliWithWitcher;
-      m3shapes = inputs.caelestia-shell.inputs.m3shapes;
+      m3shapes = inputs.caelestia-shell.inputs.m3shapes.packages.${system}.default;
       withCli = true;
+    }).overrideAttrs (old: {
+      # Stock drawers `regions` mask eats clicks in Electron CSD titlebars (Cursor tabs).
+      # Restrict layer input to the left bar so the client area passes through.
+      postFixup =
+        (old.postFixup or "")
+        + ''
+          qml="$out/share/caelestia-shell/modules/drawers/ContentWindow.qml"
+          ${pkgs.python3}/bin/python3 - "$qml" <<'PY'
+          import sys
+          from pathlib import Path
+
+          path = Path(sys.argv[1])
+          text = path.read_text()
+          old = "    mask: hasFullscreen ? emptyRegion : regions\n"
+          new = """    // nix-config: bar-only input mask so Electron (Cursor) tabs stay clickable
+              mask: hasFullscreen ? emptyRegion : barOnlyMask
+
+              Region {
+                  id: barOnlyMask
+
+                  x: 0
+                  y: 0
+                  width: Math.max(1, bar.clampedWidth)
+                  height: root.height
+              }
+          """
+          # Keep indentation consistent with surrounding QML (4 spaces)
+          new = (
+              "    // nix-config: bar-only input mask so Electron (Cursor) tabs stay clickable\n"
+              "    mask: hasFullscreen ? emptyRegion : barOnlyMask\n"
+              "\n"
+              "    Region {\n"
+              "        id: barOnlyMask\n"
+              "\n"
+              "        x: 0\n"
+              "        y: 0\n"
+              "        width: Math.max(1, bar.clampedWidth)\n"
+              "        height: root.height\n"
+              "    }\n"
+          )
+          if old not in text:
+              raise SystemExit(f"ContentWindow.qml mask line not found in {path}")
+          path.write_text(text.replace(old, new, 1))
+          print(f"patched {path}")
+          PY
+        '';
     });
 
   applyWitcherTheme = pkgs.writeShellScript "apply-caelestia-witcher-theme" ''
@@ -60,7 +106,37 @@
 
   seedShellJson = pkgs.writeText "caelestia-shell-seed.json" (
     builtins.toJSON {
-      bar.status.showBattery = true;
+      # bar.status.* was replaced by bar.statusIcons (list of {id, enabled})
+      bar.statusIcons = [
+        {
+          id = "lockStatus";
+          enabled = true;
+        }
+        {
+          id = "audio";
+          enabled = true;
+        }
+        {
+          id = "microphone";
+          enabled = true;
+        }
+        {
+          id = "kbLayout";
+          enabled = true;
+        }
+        {
+          id = "network";
+          enabled = true;
+        }
+        {
+          id = "bluetooth";
+          enabled = true;
+        }
+        {
+          id = "battery";
+          enabled = true;
+        }
+      ];
       general.apps = {
         terminal = [vars.terminal];
         explorer = ["pcmanfm"];
@@ -72,16 +148,25 @@
       };
       lock.enableFprint = config.services.fprintd.enable or false;
       paths.wallpaperDir = "~/Pictures/Wallpapers";
+      # useFahrenheit* renamed to weatherUnits / sensorUnits (Celsius|Fahrenheit|Kelvin)
       services = {
         smartScheme = false;
-        useFahrenheit = false;
-        useFahrenheitPerformance = false;
+        weatherUnits = "Celsius";
+        sensorUnits = "Celsius";
       };
       # Session menu still labels the slot "hibernate" in upstream QML; command/icon are suspend
       session = {
         icons.hibernate = "bedtime";
         commands.hibernate = ["systemctl" "suspend"];
       };
+      # Drawer edge hover + thick border amplify click stealing on Electron CSDs.
+      # (Primary fix is ContentWindow bar-only mask in caelestiaShellWithWitcher.)
+      border.thickness = 4;
+      dashboard = {
+        showOnHover = false;
+        dragThreshold = 50;
+      };
+      launcher.showOnHover = false;
     }
   );
 
@@ -134,12 +219,29 @@ in {
             done
           '';
 
-          # Locale defaults to Fahrenheit when useFahrenheit is absent; always enforce Celsius
+          # Migrate removed keys and enforce Celsius + statusIcons schema
           home.activation.caelestiaCelsiusWeather = lib.hm.dag.entryAfter ["caelestiaWritableConfig"] ''
             config="$HOME/.config/caelestia/shell.json"
             if [ -f "''${config}" ]; then
               tmp=$(mktemp)
-              ${pkgs.jq}/bin/jq '.services = ((.services // {}) + {useFahrenheit: false, useFahrenheitPerformance: false, smartScheme: false})' "''${config}" > "''${tmp}"
+              ${pkgs.jq}/bin/jq '
+                .services = ((.services // {})
+                  | del(.useFahrenheit, .useFahrenheitPerformance)
+                  + {weatherUnits: "Celsius", sensorUnits: "Celsius", smartScheme: false}
+                )
+                | .bar = ((.bar // {}) | del(.status)
+                  | if (.statusIcons | type) == "array" then .
+                    else . + {statusIcons: [
+                      {id: "lockStatus", enabled: true},
+                      {id: "audio", enabled: true},
+                      {id: "microphone", enabled: true},
+                      {id: "kbLayout", enabled: true},
+                      {id: "network", enabled: true},
+                      {id: "bluetooth", enabled: true},
+                      {id: "battery", enabled: true}
+                    ]}
+                    end)
+              ' "''${config}" > "''${tmp}"
               mv "''${tmp}" "''${config}"
               chmod u+w "''${config}"
             fi
@@ -158,6 +260,9 @@ in {
                 | .general = ((.general // {})
                   | .idle = ((.idle // {}) + {lockBeforeSleep: true})
                 )
+                | .border = ((.border // {}) + {thickness: 4})
+                | .dashboard = ((.dashboard // {}) + {showOnHover: false, dragThreshold: 50})
+                | .launcher = ((.launcher // {}) + {showOnHover: false})
               ' "''${config}" > "''${tmp}"
               mv "''${tmp}" "''${config}"
               chmod u+w "''${config}"
@@ -180,7 +285,7 @@ in {
         systemd = {
           enable = true;
           target = "hyprland-session.target";
-          # Caelestia defaults useFahrenheit from locale (Imperial US/UK) when unset in shell.json
+          # Locale can still bias other unit defaults; keep measurement metric
           environment = ["LC_MEASUREMENT=metric"];
         };
         settings = {};

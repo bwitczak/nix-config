@@ -17,13 +17,17 @@ hl.config({
 	general = {
 		border_size = 2,
 		gaps_in = 3,
-		gaps_out = 6,
+		-- Keep outer gap >= Caelestia border.thickness so CSD titlebars clear the
+		-- drawers input mask (otherwise Cursor tabs eat clicks).
+		gaps_out = 10,
 		col = {
 			active_border = "0x99@active@",
 			inactive_border = "0x66@inactive@",
 		},
-		resize_on_border = true,
+		-- false: border grab steals clicks in Electron CSD titlebars (Cursor tabs).
+		resize_on_border = false,
 		hover_icon_on_border = false,
+		extend_border_grab_area = 0,
 		layout = "dwindle",
 	},
 	decoration = {
@@ -38,7 +42,8 @@ hl.config({
 	input = {
 		kb_layout = "pl",
 		kb_options = "caps:escape",
-		follow_mouse = 2,
+		-- 2 + caelestia-drawers can steal clicks on the editor tab strip.
+		follow_mouse = 1,
 		repeat_delay = 250,
 		numlock_by_default = true,
 		accel_profile = "flat",
@@ -180,6 +185,13 @@ hl.window_rule({
 	name = "steam-fullscreen",
 	match = { class = "^(steam_app_.*)$" },
 	fullscreen = true,
+})
+
+-- Hyprland 0.56 XDG CSD drags eat clicks in Cursor's custom titlebar/tab strip.
+hl.window_rule({
+	name = "cursor-no-xdg-drags",
+	match = { class = "^(cursor)$" },
+	no_xdg_drags = true,
 })
 
 hl.window_rule({

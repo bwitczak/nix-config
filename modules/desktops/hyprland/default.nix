@@ -256,7 +256,9 @@ in
           XDG_SESSION_DESKTOP = "Hyprland";
           XCURSOR = "Catppuccin-Mocha-Dark-Cursors";
           XCURSOR_SIZE = 24;
-          NIXOS_OZONE_WL = 1;
+          # NixOS Chromium/Electron wrappers add --ozone-platform-hint=auto
+          # when this is set and WAYLAND_DISPLAY is present.
+          NIXOS_OZONE_WL = "1";
           SDL_VIDEODRIVER = "wayland";
           OZONE_PLATFORM = "wayland";
           CLUTTER_BACKEND = "wayland";
@@ -268,13 +270,18 @@ in
           MOZ_ENABLE_WAYLAND = "1";
         };
         sessionVariables =
-          if hostName == "xps"
-          then {
-            QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-            GDK_BACKEND = "wayland";
-            MOZ_ENABLE_WAYLAND = "1";
+          {
+            NIXOS_OZONE_WL = "1";
           }
-          else {};
+          // (
+            if hostName == "xps"
+            then {
+              QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+              GDK_BACKEND = "wayland";
+              MOZ_ENABLE_WAYLAND = "1";
+            }
+            else {}
+          );
         systemPackages = with pkgs; [
           socat
           grimblast

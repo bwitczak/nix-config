@@ -376,16 +376,16 @@ in {
   };
 
   # Cap journald so logs do not grow without bound
-  services.journald.extraConfig = ''
-    SystemMaxUse=500M
-    MaxRetentionSec=7day
-  '';
+  services.journald.settings.Journal = {
+    SystemMaxUse = "500M";
+    MaxRetentionSec = "7day";
+  };
   nixpkgs.config = {
     allowUnfree = true;
     # code-cursor and similar depend on electron_*; nixpkgs may pin an EOL Electron
-    permittedInsecurePackages = [
-      "electron-38.8.4"
-    ];
+    # permittedInsecurePackages = [
+    #   "electron-38.8.4"
+    # ];
   };
 
   system = {
