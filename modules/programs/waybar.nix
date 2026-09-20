@@ -83,7 +83,7 @@ in
     headset = sinkBuiltIn;
     speaker = sinkBluetooth;
   in {
-    config = lib.mkIf (config.wlwm.enable && !config.caelestia.enable) {
+    config = lib.mkIf (config.wlwm.enable) {
       environment.systemPackages = with pkgs; [
         waybar
       ];

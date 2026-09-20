@@ -72,7 +72,7 @@
       )
       hl.bind(
         "switch:off:Lid Switch",
-        hl.dsp.exec_cmd("$HOME/.config/hypr/script/lock.sh"),
+        hl.dsp.exec_cmd("${pkgs.hyprlock}/bin/hyprlock"),
         { locked = true }
       )
     ''
@@ -85,28 +85,17 @@
     ''
     else "";
 
-  ewwAutostart =
-    if config.caelestia.enable or false
-    then ""
-    else ''
-      hl.exec_cmd("${pkgs.eww}/bin/eww daemon &")
-    '';
+  ewwAutostart = ''
+    hl.exec_cmd("${pkgs.eww}/bin/eww daemon &")
+  '';
 
-  swayncAutostart =
-    if config.caelestia.enable or false
-    then ""
-    else ''
-      hl.exec_cmd("${pkgs.swaynotificationcenter}/bin/swaync &")
-    '';
+  swayncAutostart = ''
+    hl.exec_cmd("${pkgs.swaynotificationcenter}/bin/swaync &")
+  '';
 
-  launcherKeybind =
-    if config.caelestia.enable or false
-    then ''
-      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("caelestia shell drawers toggle launcher"))
-    ''
-    else ''
-      hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("pkill wofi || ${pkgs.wofi}/bin/wofi --show drun"))
-    '';
+  launcherKeybind = ''
+    hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("pkill wofi || ${pkgs.wofi}/bin/wofi --show drun"))
+  '';
 
   gestures = "";
 
@@ -115,35 +104,8 @@
 
   hyprlockBin = "${pkgs.hyprlock}/bin/hyprlock";
 
-  # Hyprland always enables Caelestia in this config; use its lock screen everywhere
-  useCaelestiaLock = config.hyprland.enable or false;
-
-  caelestiaLockScript = pkgs.writeShellScript "caelestia-lock" ''
-    #!/bin/sh
-    if ! command -v caelestia >/dev/null 2>&1 || ! systemctl --user is-active -q caelestia 2>/dev/null; then
-      exec ${hyprlockBin} --grace 0
-    fi
-    if caelestia shell lock isLocked 2>/dev/null | grep -qx true; then
-      exit 0
-    fi
-    caelestia shell lock lock
-  '';
-
-  waitForCaelestiaLock = ''
-    i=0
-    while [ "$i" -lt 25 ]; do
-      caelestia shell lock isLocked 2>/dev/null | grep -qx true && exit 0
-      i=$((i + 1))
-      sleep 0.1
-    done
-    exit 1
-  '';
-
   # --immediate is broken in hyprlock 0.9.5; --grace 0 locks without a grace period.
-  lockNow =
-    if useCaelestiaLock
-    then "${caelestiaLockScript}"
-    else "${hyprlockBin} --grace 0";
+  lockNow = "${hyprlockBin} --grace 0";
 
   waitForHyprlock = ''
     i=0
@@ -155,40 +117,19 @@
     exit 1
   '';
 
-  beforeSleepScript =
-    if useCaelestiaLock
-    then
-      pkgs.writeShellScript "before-sleep-lock" ''
-        #!/bin/sh
-        if caelestia shell lock isLocked 2>/dev/null | grep -qx true; then
-          exit 0
-        fi
-        ${caelestiaLockScript}
-        ${waitForCaelestiaLock}
-      ''
-    else
-      pkgs.writeShellScript "before-sleep-lock" ''
-        #!/bin/sh
-        if ! pgrep -x hyprlock >/dev/null 2>&1; then
-          ${lockNow} &
-          ${waitForHyprlock}
-        fi
-      '';
+  beforeSleepScript = pkgs.writeShellScript "before-sleep-lock" ''
+    #!/bin/sh
+    if ! pgrep -x hyprlock >/dev/null 2>&1; then
+      ${lockNow} &
+      ${waitForHyprlock}
+    fi
+  '';
 
-  afterSleepScript =
-    if useCaelestiaLock
-    then
-      pkgs.writeShellScript "after-sleep-lock" ''
-        #!/bin/sh
-        # Caelestia lock persists through suspend; unlock via its PAM UI
-        exit 0
-      ''
-    else
-      pkgs.writeShellScript "after-sleep-lock" ''
-        #!/bin/sh
-        # Hyprland 0.55+ enables displays on input; lock on wake (foreground).
-        exec ${lockNow}
-      '';
+  afterSleepScript = pkgs.writeShellScript "after-sleep-lock" ''
+    #!/bin/sh
+    # Hyprland 0.55+ enables displays on input; lock on wake (foreground).
+    exec ${lockNow}
+  '';
 
   suspendScript = pkgs.writeShellScript "suspend-with-lock" ''
     #!/bin/sh
@@ -196,12 +137,9 @@
     ${pkgs.systemd}/bin/systemctl suspend
   '';
 
-  lockAutostart =
-    if useCaelestiaLock
-    then ""
-    else ''
-      hl.exec_cmd("@lockScript@")
-    '';
+  lockAutostart = ''
+    hl.exec_cmd("@lockScript@")
+  '';
 
   hyprlandLua = pkgs.replaceVars ./hyprland.lua {
     inherit hostName bg active inactive execOnceExtra ewwAutostart swayncAutostart launcherKeybind lockAutostart;
@@ -233,7 +171,6 @@ in
     };
 
     config = mkIf (config.hyprland.enable) {
-      caelestia.enable = true;
       wlwm.enable = true;
 
       xdg.portal = {
@@ -299,7 +236,7 @@ in
         package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
       };
 
-      security.pam.services.hyprlock = lib.mkIf (!useCaelestiaLock) {
+      security.pam.services.hyprlock = {
         text = "auth include login";
         fprintAuth =
           if hostName == "xps"
@@ -356,7 +293,7 @@ in
           fi
         '';
       in {
-        programs.hyprlock = lib.mkIf (!useCaelestiaLock) (with colors.scheme.default; {
+        programs.hyprlock = with colors.scheme.default; {
           enable = true;
           settings = {
             general = {
@@ -402,7 +339,7 @@ in
               }
             ];
           };
-        });
+        };
 
         services.hypridle = {
           enable = true;
@@ -411,10 +348,7 @@ in
               before_sleep_cmd = "${beforeSleepScript}";
               after_sleep_cmd = "${afterSleepScript}";
               ignore_dbus_inhibit = false;
-              lock_cmd =
-                if useCaelestiaLock
-                then "${caelestiaLockScript}"
-                else "pgrep -x hyprlock >/dev/null 2>&1 || ${lockNow}";
+              lock_cmd = "pgrep -x hyprlock >/dev/null 2>&1 || ${lockNow}";
             };
             listener = [
               {
@@ -481,11 +415,6 @@ in
         };
 
         home.file = {
-          ".config/hypr/script/lock.sh" = {
-            source = caelestiaLockScript;
-            executable = true;
-          };
-
           ".config/hypr/script/monitor-hotplug.sh" = {
             text = ''
               #!/bin/sh
