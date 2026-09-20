@@ -6,7 +6,9 @@
   pkgs,
   vars,
   ...
-}: {
+}: let
+  colors = import ../theming/colors.nix;
+in {
   users.users.${vars.user} = {
     shell = pkgs.zsh;
   };
@@ -39,7 +41,11 @@
 
     programs.zsh = {
       enable = true;
-      autosuggestion.enable = true;
+      autosuggestion = {
+        enable = true;
+        # Default fg=8 maps poorly in Rio; use theme comment gray.
+        highlight = "fg=#${colors.colors.hex.comment}";
+      };
       syntaxHighlighting.enable = true;
       enableCompletion = true;
       history.size = 100000;
