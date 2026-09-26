@@ -32,7 +32,10 @@ in {
           exit 1
         fi
       fi
-      ${flatpak} override --system --nosocket=wayland com.nvidia.geforcenow || true
+      # Intel/AMD: Wayland (NVIDIA's recommendation). Forcing X11 breaks Geronimo
+      # on Hyprland with error 0x80F10000 ("Geronimo platform startup failed").
+      # NVIDIA dGPU hosts may need --nosocket=wayland instead.
+      ${flatpak} override --system --socket=wayland --unset-env=GDK_BACKEND com.nvidia.geforcenow || true
     '';
   };
 }
