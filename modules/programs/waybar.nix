@@ -31,7 +31,10 @@ in
       if hyprland.enable == true
       then [
         "custom/menu"
-        "hyprland/workspaces"
+        # hyprland/workspaces is broken on Hyprland >= 0.56 with Waybar 0.15:
+        # IPC dropped numeric "id" for "address"/"type", so every WS collapses to 0.
+        # Use ext/workspaces until Waybar ships addressable IPC support (PR #5324).
+        "ext/workspaces"
       ]
       else if sway.enable == true
       then [
@@ -258,9 +261,20 @@ in
                 active-only = false;
                 on-click = "activate";
               };
+              "ext/workspaces" = {
+                format = "<span font='11'>{name}</span>";
+                on-click = "activate";
+                all-outputs = true;
+                sort-by-id = true;
+                active-only = false;
+              };
               "hyprland/workspaces" = {
                 format = "<span font='11'>{name}</span>";
                 window-rewrite = {};
+                all-outputs = true;
+                persistent-workspaces = {
+                  "*" = [1 2 3 4 5 6 7 8];
+                };
               };
               clock = {
                 format = "{:%b %d %H:%M}  ";

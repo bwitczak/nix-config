@@ -42,7 +42,7 @@ in {
       host = {
         hostName = "dell";
         mainMonitor = "eDP-1";
-        secondMonitor = "DP-1";
+        secondMonitor = "HDMI-A-1";
         thirdMonitor = "DP-5";
         secondMonitorDesc = "ViewSonic Corporation VX3276-QHD V9W202640037";
         thirdMonitorDesc = "desc:HP Inc. HP E24i G4 6CM3071996";

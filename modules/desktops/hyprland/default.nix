@@ -437,9 +437,11 @@ in
                 exit 0
               fi
 
+              # Hyprland 0.56 reports .disabled=true even for active monitors;
+              # a disabled output is omitted from `hyprctl monitors` entirely.
               monitor_enabled() {
                 ${hyprctlBin} monitors -j | ${pkgs.jq}/bin/jq -e --arg m "$MONITOR" \
-                  '.[] | select(.name == $m and .disabled == false)' >/dev/null
+                  '.[] | select(.name == $m)' >/dev/null
               }
 
               touch /tmp/hypr-monitor-toggle-lock
